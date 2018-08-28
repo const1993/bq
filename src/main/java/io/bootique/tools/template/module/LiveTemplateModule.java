@@ -7,8 +7,10 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import io.bootique.BQCoreModule;
+import io.bootique.BQModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
+import io.bootique.meta.application.OptionMetadata;
 import io.bootique.tools.template.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.TemplateService;
@@ -21,12 +23,20 @@ public class LiveTemplateModule extends ConfigModule {
 
     @Override
     public void configure(Binder binder) {
+
         binder.bind(PropertyService.class).to(DefaultPropertyService.class).in(Singleton.class);
 
-        BQCoreModule.extend(binder).addCommand(NewProjectCommand.class);
+        OptionMetadata o = OptionMetadata.builder("hello-tpl")
+                .description("Load template by option")
+                .build();
 
-        contributeProcessor(binder, "javaPackage", JavaPackageProcessor.class);
+        BQCoreModule.extend(binder)
+                .addOption(o)
+                .addConfigOnOption(o.getName(), "classpath:templates/demo.yml")
+                .addCommand(NewProjectCommand.class);
+
         contributeProcessor(binder, "maven", MavenProcessor.class);
+        contributeProcessor(binder, "javaPackage", JavaPackageProcessor.class);
     }
 
     public static void contributeProcessor(Binder binder, String name, TemplateProcessor processor) {

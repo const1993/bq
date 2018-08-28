@@ -1,6 +1,7 @@
 package io.bootique.tools.template.source;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,10 +15,10 @@ public class SourceSetTest {
     private SourceSet sourceSet;
     
     private final static Path[] PATHS = {
-            Path.of("some","path"),
-            Path.of("some","other", "path", "file.ext"),
-            Path.of("some","file.ext"),
-            Path.of("file.ext")
+            Paths.get("some","path"),
+            Paths.get("some","other", "path", "file.ext"),
+            Paths.get("some","file.ext"),
+            Paths.get("file.ext")
     };
 
     @Before

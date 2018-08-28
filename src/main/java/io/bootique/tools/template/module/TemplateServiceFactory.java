@@ -1,6 +1,8 @@
 package io.bootique.tools.template.module;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,11 +22,11 @@ public class TemplateServiceFactory {
 
     TemplateService createTemplateService(Map<String, TemplateProcessor> processorMap) {
         return new DefaultTemplateService(
-                templateRoot.toPath(),
-                output.toPath(),
-                sourceSets.stream()
+                templateRoot != null ? templateRoot.toPath() : null,
+                output != null ? output.toPath() : null,
+                sourceSets != null ? sourceSets.stream()
                         .map(factory -> factory.createSourceSet(processorMap))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()) : Collections.emptyList()
         );
     }
 

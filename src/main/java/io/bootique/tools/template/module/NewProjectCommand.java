@@ -14,6 +14,10 @@ public class NewProjectCommand implements Command {
 
     @Override
     public CommandOutcome run(Cli cli) {
+        if (cli.optionString("template-type") != null) {
+
+        }
+
         templateService.get().process();
         return CommandOutcome.succeeded();
     }
