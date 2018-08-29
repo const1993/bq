@@ -1,21 +1,27 @@
 package io.bootique.tools.template;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import io.bootique.tools.template.processor.TemplateProcessor;
 import io.bootique.tools.template.source.SourceSet;
 
 public class DefaultTemplateService implements TemplateService {
 
-    private Path templateRoot;
+    private final Path templateRoot;
     private final Path outputRoot;
     private final List<SourceSet> sourceSets;
 
@@ -33,75 +39,77 @@ public class DefaultTemplateService implements TemplateService {
             throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
         }
 
-        if (!Files.exists(templateRoot)) {
+        if (templateRoot.toString().startsWith("jar:file:")) {
+            throw new TemplateException("Cant read jar file " + templateRoot);
+        }
+
+        URI fileURI = templateRoot.toUri();
+
+        if (!Files.exists(templateRoot) ) {
             try {
                 String name = templateRoot.toString();
-                System.out.println("name: " + name);
                 URL resource = ClassLoader.getSystemResource(name);
-                System.out.println(resource);
 
-                URI uri = resource.toURI();
-                System.out.println(uri);
-
-                Path path = null;
-
-                if (uri.getScheme().equals("jar")) {
-                    String[] array = uri.toString().split("!");
-                    System.out.println("file: "+ array[0]);
-                    System.out.println("template: "+ array[1]);
-
-                    ZipFile zipFile = new ZipFile(array[0].replace("jar:file:", ""));
-                    readInnerZipFile(zipFile, array[1].substring(1, array[1].length()) + ".zip");
-                } else {
-                    // Not running in a jar, so just use a regular filesystem path
-                    path = Paths.get(uri);
-                }
-
-                System.out.println("url: " + path);
-                templateRoot = null;
+                fileURI = resource.toURI();
             } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
+        if (fileURI.getScheme().equals("jar") ) {
+            try {
+                String[] array = fileURI.toString().split("!");
+
+                ZipFile zipFile = new ZipFile(array[0].replace("jar:file:", ""));
+                readInnerZipFile(zipFile, array[1].substring(1, array[1].length()) + ".zip");
+                return;
+            } catch (IOException ex) {
+                throw new TemplateException("Can't read template jar " + templateRoot, ex);
+            }
+        }
+
+        File file = new File(fileURI);
+        if (!file.isDirectory()) {
+            try {
+                ZipFile zipFile = new ZipFile(file);
+                parseZipTemplate(zipFile);
+                return;
+            } catch (IOException ex) {
+                throw new TemplateException("Can't read template zip " + templateRoot, ex);
+            }
+        }
+
         try {
-            Files.walk(templateRoot).forEach(this::processPath);
+            Path start = Paths.get(fileURI);
+            Files.walk(start).forEach(path -> processPath(path, start));
         } catch (IOException ex) {
             throw new TemplateException("Can't read template root directory " + templateRoot, ex);
         }
     }
 
-    public void readInnerZipFile(ZipFile outerZipFile, String innerZipFileEntryName) {
+    private void readInnerZipFile(ZipFile outerZipFile, String innerZipFileEntryName) {
         File tempFile = null;
-        FileOutputStream tempOut = null;
+        FileOutputStream tempOut;
         ZipFile innerZipFile = null;
         try {
             tempFile = File.createTempFile("tempFile", "zip");
             tempOut = new FileOutputStream(tempFile);
 
             ZipEntry subentry = outerZipFile.getEntry(innerZipFileEntryName);
-            System.out.println("innerZipFileEntryName " + innerZipFileEntryName);
-            System.out.println("outerZipFile " + outerZipFile);
-            System.out.println("subentry " + subentry);
             InputStream inputStream = outerZipFile.getInputStream(subentry);
             inputStream.transferTo(tempOut);
 
-                    innerZipFile = new ZipFile(tempFile);
-            Enumeration<? extends ZipEntry> entries = innerZipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                System.out.println("I can read" + entry);
-            }
+            innerZipFile = new ZipFile(tempFile);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            parseZipTemplate(innerZipFile);
+
+        } catch (IOException ex) {
+            throw new TemplateException("Can't read template zip " + templateRoot, ex);
         } finally {
-            // Make sure to clean up your I/O streams
             try {
-                if (outerZipFile != null)
+                if (outerZipFile != null) {
                     outerZipFile.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -110,39 +118,58 @@ public class DefaultTemplateService implements TemplateService {
                 System.out.println("Could not delete " + tempFile);
             }
             try {
-                if (innerZipFile != null)
+                if (innerZipFile != null) {
                     innerZipFile.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    void processJarEntry(ZipEntry entry) {
-        String realName = entry.getName();
-        System.out.println("entry: " + realName);
+    void parseZipTemplate(ZipFile zipFile) {
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        String topLevelDirName = null;
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
 
+            topLevelDirName = topLevelDirName == null ? entry.getName() : topLevelDirName;
+            processJarEntry(entry, zipFile, topLevelDirName);
+        }
     }
 
-    void processPath(Path path) {
-        // TODO: any good use-case for empty dirs in template projects? skip for now.
-        if(Files.isDirectory(path)) {
+    void processJarEntry(ZipEntry entry, ZipFile file, String topLevelDirName) {
+        if (entry.isDirectory()) {
             return;
         }
 
-        Path relativeDir = templateRoot.relativize(path);
+        Path relativePath = Paths.get(entry.getName().replaceFirst(topLevelDirName, ""));
 
-        // Process templates
         for (var set : sourceSets) {
-            if (set.combineFilters().test(relativeDir)) {
-                TemplateProcessor templateProcessor = set.combineProcessors();
-                saveTemplate(templateProcessor.process(loadTemplate(path)));
+            if (set.combineFilters().test(relativePath)) {
+                saveTemplate(set.combineProcessors().process(loadTemplate(relativePath, loadZipEntryContent(file, entry))));
             }
         }
     }
 
-    private Template loadTemplate(Path path) {
-        return new Template(convertToOutputPath(path), loadContent(path));
+    void processPath(Path path, Path start) {
+        // TODO: any good use-case for empty dirs in template projects? skip for now.
+        if (Files.isDirectory(path)) {
+            return;
+        }
+
+        Path relativeDir = start.relativize(path);
+
+        // Process templates
+        for (var set : sourceSets) {
+            if (set.combineFilters().test(relativeDir)) {
+                saveTemplate(set.combineProcessors().process(loadTemplate(relativeDir, loadContent(path))));
+            }
+        }
+    }
+
+    private Template loadTemplate(Path path, String content) {
+        return new Template(outputRoot.resolve(path), content);
     }
 
     void saveTemplate(Template template) {
@@ -164,14 +191,13 @@ public class DefaultTemplateService implements TemplateService {
         return content;
     }
 
-    /**
-     * Utility method that converts path from templates source dir into target dir.
-     *
-     * @param path original path in templates directory
-     * @return path in target directory
-     */
-    Path convertToOutputPath(Path path) {
-        Path relativeDir = templateRoot.relativize(path);
-        return outputRoot.resolve(relativeDir);
+    String loadZipEntryContent(ZipFile file, ZipEntry entry) {
+        String content;
+        try {
+            content = new String(file.getInputStream(entry).readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            throw new TemplateException("Unable to read template " + entry.getName() + " from zip file " + file.getName(), ex);
+        }
+        return content;
     }
 }

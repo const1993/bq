@@ -28,7 +28,7 @@ public class ApplicationTest {
         Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "Test.java"));
 
         BQRuntime runtime = testFactory.app()
-                .args("-c=classpath:demo.yml")
+                .args("-c=classpath:test-tpl/hello-tpl.yml")
                 .autoLoadModules()
                 .createRuntime();
 

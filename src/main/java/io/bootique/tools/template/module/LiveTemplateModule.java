@@ -7,7 +7,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import io.bootique.BQCoreModule;
-import io.bootique.BQModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.meta.application.OptionMetadata;
@@ -26,13 +25,12 @@ public class LiveTemplateModule extends ConfigModule {
 
         binder.bind(PropertyService.class).to(DefaultPropertyService.class).in(Singleton.class);
 
-        OptionMetadata o = OptionMetadata.builder("hello-tpl")
+        OptionMetadata helloTemplateOprion = OptionMetadata.builder("hello-tpl")
                 .description("Load template by option")
                 .build();
 
         BQCoreModule.extend(binder)
-                .addOption(o)
-                .addConfigOnOption(o.getName(), "classpath:templates/demo.yml")
+                .addOption(helloTemplateOprion).addConfigOnOption(helloTemplateOprion.getName(), "classpath:templates/hello-tpl.yml")
                 .addCommand(NewProjectCommand.class);
 
         contributeProcessor(binder, "maven", MavenProcessor.class);
