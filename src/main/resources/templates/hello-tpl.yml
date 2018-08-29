@@ -6,8 +6,6 @@ properties:
 
 templates:
   templateRoot: "/Users/haria/git/bootique-all/bq/src/main/resources/templates/hello-tpl.zip"
-#  templateRoot: "templates/hello-tpl"
-#  output: "/Users/haria/git/bootique-all/bq/target/tmp"
   sourceSets:
     # maven project
     - includes:

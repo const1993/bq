@@ -11,6 +11,7 @@ import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.tools.template.DefaultTemplateService;
 import io.bootique.tools.template.TemplateService;
+import io.bootique.tools.template.ZipTemplateService;
 import io.bootique.tools.template.processor.TemplateProcessor;
 
 @BQConfig("Template configuration")
@@ -21,6 +22,15 @@ public class TemplateServiceFactory {
     private List<SourceSetFactory> sourceSets;
 
     TemplateService createTemplateService(Map<String, TemplateProcessor> processorMap) {
+
+        if (templateRoot != null && templateRoot.toString().endsWith(".zip")) {
+            return new ZipTemplateService(templateRoot.toPath(),
+                    output != null ? output.toPath() : null,
+                    sourceSets != null ? sourceSets.stream()
+                            .map(factory -> factory.createSourceSet(processorMap))
+                            .collect(Collectors.toList()) : Collections.emptyList());
+        }
+
         return new DefaultTemplateService(
                 templateRoot != null ? templateRoot.toPath() : null,
                 output != null ? output.toPath() : null,

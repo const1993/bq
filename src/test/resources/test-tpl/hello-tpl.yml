@@ -5,7 +5,7 @@ properties:
   maven.version: "0.26-SNAPSHOT"
 
 templates:
-  templateRoot: "target/test-classes/test-tpl"
+  templateRoot: "target/test-classes/test-tpl/hello-tpl"
   output: "target/tmp-output"
   sourceSets:
     # maven project
