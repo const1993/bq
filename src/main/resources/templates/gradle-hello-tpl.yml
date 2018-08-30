@@ -1,0 +1,26 @@
+properties:
+  java.package: "io.bootique.demo"
+  gradle.group: "io.bootique.demo"
+  gradle.project.name: "bootique-demo"
+  gradle.version: "0.26-SNAPSHOT"
+
+
+templates:
+  templateRoot: "/Users/haria/git/bootique-all/bq/src/main/resources/templates/gradle-hello-tpl.zip"
+#  output: "/Users/haria/git/bootique-all/bq/target/tmp"
+  sourceSets:
+    # java files
+    - includes:
+        - "**/*.java"
+      processors:
+        - javaPackage
+    - includes:
+        - "*.gradle"
+      processors:
+        - gradle
+
+    # everything else
+    - excludes:
+        - pom.xml
+        - "**/*.java"
+        - "*.gradle"

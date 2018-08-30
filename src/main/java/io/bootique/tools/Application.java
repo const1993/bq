@@ -7,7 +7,7 @@ public class Application {
     public static void main(String[] args) {
         Bootique
                 .app(args)
-                .args("-n", "--hello-tpl")
+                .args("-n", "--gradle-hello-tpl")
                 .autoLoadModules()
                 .exec()
                 .exit();

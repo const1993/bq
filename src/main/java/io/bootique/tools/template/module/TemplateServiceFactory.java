@@ -1,7 +1,6 @@
 package io.bootique.tools.template.module;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

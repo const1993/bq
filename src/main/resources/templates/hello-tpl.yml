@@ -6,6 +6,7 @@ properties:
 
 templates:
   templateRoot: "/Users/haria/git/bootique-all/bq/src/main/resources/templates/hello-tpl.zip"
+#  output: "/Users/haria/git/bootique-all/bq/target/tmp"
   sourceSets:
     # maven project
     - includes:
@@ -17,7 +18,13 @@ templates:
         - "**/*.java"
       processors:
         - javaPackage
+    - includes:
+        - "*.gradle"
+      processors:
+        - gradle
+
     # everything else
     - excludes:
-        - pom.xml
-        - "**/*.java"
+      - pom.xml
+      - "**/*.java"
+      - "**/*.gradle"

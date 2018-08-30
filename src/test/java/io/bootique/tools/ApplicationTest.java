@@ -23,10 +23,7 @@ public class ApplicationTest {
 
     @Test
     public void runtimeTest() throws IOException {
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "test.file"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "pom.xml"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "Test.java"));
-
+        cleanup();
         BQRuntime runtime = testFactory.app()
                 .args("-c=classpath:test-tpl/hello-tpl.yml")
                 .autoLoadModules()
@@ -40,13 +37,24 @@ public class ApplicationTest {
     }
 
     @Test
+    public void gradleRuntimeTest() throws IOException {
+        cleanup();
+        BQRuntime runtime = testFactory.app()
+                .args("-c=classpath:test-tpl/gradle-hello-tpl.yml")
+                .autoLoadModules()
+                .createRuntime();
+
+        PropertyService propertyService = runtime.getInstance(PropertyService.class);
+        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+
+        TemplateService templateService = runtime.getInstance(TemplateService.class);
+        templateService.process();
+    }
+
+    @Test
     public void loadFromClasspathTest() throws IOException {
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "test.file"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "pom.xml"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "Test.java"));
-
-        System.setProperty("user.dir" , System.getProperty("user.dir") + "/target/tmp-output");
-
+        cleanup();
+        System.setProperty("user.dir", System.getProperty("user.dir") + "/target/tmp-output");
         BQRuntime runtime = testFactory.app()
                 .args("--hello-tpl")
                 .autoLoadModules()
@@ -57,5 +65,30 @@ public class ApplicationTest {
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
+    }
+
+    @Test
+    public void loadGradleProjectFromClasspathTest() throws IOException {
+        cleanup();
+        System.setProperty("user.dir", System.getProperty("user.dir") + "/target/tmp-output");
+
+        BQRuntime runtime = testFactory.app()
+                .args("--gradle-hello-tpl")
+                .autoLoadModules()
+                .createRuntime();
+
+        PropertyService propertyService = runtime.getInstance(PropertyService.class);
+        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+
+        TemplateService templateService = runtime.getInstance(TemplateService.class);
+        templateService.process();
+    }
+
+    private void cleanup() throws IOException {
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "test.file"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "build.gradle"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "settings.gradle"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "pom.xml"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "Test.java"));
     }
 }

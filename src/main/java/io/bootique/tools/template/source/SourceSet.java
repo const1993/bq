@@ -29,24 +29,24 @@ public class SourceSet {
     }
 
     public SourceFilter combineFilters() {
-        if(combinedFilter != null) {
+        if (combinedFilter != null) {
             return combinedFilter;
         }
 
-        if(includes.isEmpty() && excludes.isEmpty()) {
+        if (includes.isEmpty() && excludes.isEmpty()) {
             return combinedFilter = path -> true;
         }
 
-        for(var filter: includes) {
-            if(combinedFilter == null) {
+        for (var filter : includes) {
+            if (combinedFilter == null) {
                 combinedFilter = filter;
             } else {
                 combinedFilter = combinedFilter.or(filter);
             }
         }
 
-        for(var filter: excludes) {
-            if(combinedFilter == null) {
+        for (var filter : excludes) {
+            if (combinedFilter == null) {
                 combinedFilter = filter;
             } else {
                 combinedFilter = combinedFilter.and(filter);
@@ -57,17 +57,17 @@ public class SourceSet {
     }
 
     public TemplateProcessor combineProcessors() {
-        if(combinedProcessor != null) {
+        if (combinedProcessor != null) {
             return combinedProcessor;
         }
 
-        if(processors.isEmpty()) {
+        if (processors.isEmpty()) {
             // use identity processor by default
             return combinedProcessor = t -> t;
         }
 
-        for(var processor: processors) {
-            if(combinedProcessor == null) {
+        for (var processor : processors) {
+            if (combinedProcessor == null) {
                 combinedProcessor = processor;
             } else {
                 combinedProcessor = combinedProcessor.andThen(processor);

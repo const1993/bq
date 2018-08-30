@@ -13,6 +13,7 @@ import io.bootique.meta.application.OptionMetadata;
 import io.bootique.tools.template.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.TemplateService;
+import io.bootique.tools.template.processor.GradleProcessor;
 import io.bootique.tools.template.processor.JavaPackageProcessor;
 import io.bootique.tools.template.processor.MavenProcessor;
 import io.bootique.tools.template.processor.TemplateProcessor;
@@ -29,10 +30,16 @@ public class LiveTemplateModule extends ConfigModule {
                 .description("Load template by option")
                 .build();
 
+        OptionMetadata gradleTemplateOprion = OptionMetadata.builder("gradle-hello-tpl")
+                .description("Load template by option")
+                .build();
+
         BQCoreModule.extend(binder)
+                .addOption(gradleTemplateOprion).addConfigOnOption(gradleTemplateOprion.getName(), "classpath:templates/gradle-hello-tpl.yml")
                 .addOption(helloTemplateOprion).addConfigOnOption(helloTemplateOprion.getName(), "classpath:templates/hello-tpl.yml")
                 .addCommand(NewProjectCommand.class);
 
+        contributeProcessor(binder, "gradle", GradleProcessor.class);
         contributeProcessor(binder, "maven", MavenProcessor.class);
         contributeProcessor(binder, "javaPackage", JavaPackageProcessor.class);
     }
