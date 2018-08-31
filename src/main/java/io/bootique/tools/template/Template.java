@@ -5,12 +5,18 @@ import java.util.Objects;
 
 public class Template {
 
+    private String name;
     private final Path path;
     private final String content;
 
-    public Template(Path path, String content) {
+    public Template(Path path, String content, String name) {
         this.path = Objects.requireNonNull(path);
-        this.content = Objects.requireNonNull(content)  ;
+        this.content = Objects.requireNonNull(content);
+        this.name = name;
+    }
+
+    public Template(Path path, String content) {
+        this(path, content, null);
     }
 
     public Path getPath() {
@@ -33,6 +39,10 @@ public class Template {
             return this;
         }
         return new Template(path, newContent);
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

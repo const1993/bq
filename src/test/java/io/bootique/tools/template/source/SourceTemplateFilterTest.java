@@ -2,9 +2,7 @@ package io.bootique.tools.template.source;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.junit.Test;
 

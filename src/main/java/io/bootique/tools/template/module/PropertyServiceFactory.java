@@ -4,7 +4,7 @@ import java.util.Map;
 
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
-import io.bootique.tools.template.DefaultPropertyService;
+import io.bootique.tools.template.services.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
 
 @BQConfig

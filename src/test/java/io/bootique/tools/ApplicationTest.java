@@ -3,7 +3,7 @@ package io.bootique.tools;
 import io.bootique.BQRuntime;
 import io.bootique.test.junit.BQTestFactory;
 import io.bootique.tools.template.PropertyService;
-import io.bootique.tools.template.TemplateService;
+import io.bootique.tools.template.services.TemplateService;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -83,6 +83,24 @@ public class ApplicationTest {
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
     }
+
+    @Test
+    public void createModuleTest() throws IOException {
+        cleanup();
+        System.setProperty("user.dir", System.getProperty("user.dir") + "/target/tmp-output");
+
+        BQRuntime runtime = testFactory.app()
+                .args("--module-name=Test")
+                .autoLoadModules()
+                .createRuntime();
+
+        PropertyService propertyService = runtime.getInstance(PropertyService.class);
+        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+
+        TemplateService templateService = runtime.getInstance(TemplateService.class);
+        templateService.process();
+    }
+
 
     private void cleanup() throws IOException {
         Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "test.file"));

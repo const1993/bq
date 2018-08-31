@@ -4,16 +4,15 @@ properties:
   gradle.project.name: "bootique-demo"
   gradle.version: "0.26-SNAPSHOT"
 
-
 templates:
-  templateRoot: "/Users/haria/git/bootique-all/bq/src/main/resources/templates/gradle-hello-tpl.zip"
-#  output: "/Users/haria/git/bootique-all/bq/target/tmp"
+  templateRoot: "templates/gradle-hello-tpl.zip"
   sourceSets:
     # java files
     - includes:
         - "**/*.java"
       processors:
         - javaPackage
+    # gradle files
     - includes:
         - "*.gradle"
       processors:

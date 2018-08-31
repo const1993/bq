@@ -1,4 +1,6 @@
-package io.bootique.tools.template;
+package io.bootique.tools.template.services;
+
+import io.bootique.tools.template.PropertyService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

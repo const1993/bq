@@ -2,7 +2,7 @@ package io.bootique.tools.template.processor;
 
 import java.nio.file.Paths;
 
-import io.bootique.tools.template.DefaultPropertyService;
+import io.bootique.tools.template.services.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
 import org.junit.Before;

@@ -10,7 +10,7 @@ import io.bootique.tools.template.Template;
 
 public class JavaPackageProcessor implements TemplateProcessor {
 
-    private static final String TEMPLATE_PACKAGE = "example";
+    protected static final String TEMPLATE_PACKAGE = "example";
 
     @Inject
     PropertyService propertyService;

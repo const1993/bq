@@ -1,7 +1,6 @@
-package io.bootique.tools.template;
+package io.bootique.tools.template.services;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
+import io.bootique.tools.template.Template;
+import io.bootique.tools.template.TemplateException;
 import io.bootique.tools.template.source.SourceSet;
 
 public class DefaultTemplateService implements TemplateService {

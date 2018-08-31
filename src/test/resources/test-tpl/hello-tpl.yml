@@ -18,6 +18,7 @@ templates:
         - "**/*.java"
       processors:
         - javaPackage
+
     # everything else
     - excludes:
         - pom.xml

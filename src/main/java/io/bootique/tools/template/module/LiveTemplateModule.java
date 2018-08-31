@@ -10,12 +10,14 @@ import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.meta.application.OptionMetadata;
-import io.bootique.tools.template.DefaultPropertyService;
+import io.bootique.tools.template.services.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
-import io.bootique.tools.template.TemplateService;
+import io.bootique.tools.template.services.TemplateService;
 import io.bootique.tools.template.processor.GradleProcessor;
 import io.bootique.tools.template.processor.JavaPackageProcessor;
 import io.bootique.tools.template.processor.MavenProcessor;
+import io.bootique.tools.template.processor.ModuleProviderProcessor;
+import io.bootique.tools.template.processor.ModulesProcessor;
 import io.bootique.tools.template.processor.TemplateProcessor;
 import io.bootique.type.TypeRef;
 
@@ -26,19 +28,20 @@ public class LiveTemplateModule extends ConfigModule {
 
         binder.bind(PropertyService.class).to(DefaultPropertyService.class).in(Singleton.class);
 
-        OptionMetadata helloTemplateOprion = OptionMetadata.builder("hello-tpl")
-                .description("Load template by option")
-                .build();
-
-        OptionMetadata gradleTemplateOprion = OptionMetadata.builder("gradle-hello-tpl")
-                .description("Load template by option")
-                .build();
+        OptionMetadata helloTemplateOption = OptionMetadata.builder("hello-tpl").description("Load template by option").build();
+        OptionMetadata gradleTemplateOption = OptionMetadata.builder("gradle-hello-tpl").description("Load template by option").build();
+        OptionMetadata moduleOption = OptionMetadata.builder("module-name").description("Load module").configPath("templates.moduleName")
+                .defaultValue("ExampleModule").valueRequired().build();
 
         BQCoreModule.extend(binder)
-                .addOption(gradleTemplateOprion).addConfigOnOption(gradleTemplateOprion.getName(), "classpath:templates/gradle-hello-tpl.yml")
-                .addOption(helloTemplateOprion).addConfigOnOption(helloTemplateOprion.getName(), "classpath:templates/hello-tpl.yml")
+                .addOption(gradleTemplateOption).addConfigOnOption(gradleTemplateOption.getName(), "classpath:templates/gradle-hello-tpl.yml")
+                .addOption(helloTemplateOption).addConfigOnOption(helloTemplateOption.getName(), "classpath:templates/hello-tpl.yml")
+                .addOption(moduleOption)
+                .addConfigOnOption(moduleOption.getName(), "classpath:templates/module-tpl.yml")
                 .addCommand(NewProjectCommand.class);
 
+        contributeProcessor(binder, "module", ModulesProcessor.class);
+        contributeProcessor(binder, "moduleProvider", ModuleProviderProcessor.class);
         contributeProcessor(binder, "gradle", GradleProcessor.class);
         contributeProcessor(binder, "maven", MavenProcessor.class);
         contributeProcessor(binder, "javaPackage", JavaPackageProcessor.class);
@@ -70,7 +73,6 @@ public class LiveTemplateModule extends ConfigModule {
         props.forEach(propertyService::setProperty);
         return propertyService;
     }
-
 
     @Override
     protected String defaultConfigPrefix() {

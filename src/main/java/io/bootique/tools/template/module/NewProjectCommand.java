@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import io.bootique.cli.Cli;
 import io.bootique.command.Command;
 import io.bootique.command.CommandOutcome;
-import io.bootique.tools.template.TemplateService;
+import io.bootique.tools.template.services.TemplateService;
 
 public class NewProjectCommand implements Command {
 
@@ -14,9 +14,6 @@ public class NewProjectCommand implements Command {
 
     @Override
     public CommandOutcome run(Cli cli) {
-        if (cli.optionString("template-type") != null) {
-
-        }
 
         templateService.get().process();
         return CommandOutcome.succeeded();

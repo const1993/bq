@@ -1,5 +1,6 @@
-package io.bootique.tools.template;
+package io.bootique.tools.template.services;
 
+import io.bootique.tools.template.TemplateException;
 import io.bootique.tools.template.source.SourceSet;
 
 import java.io.File;
