@@ -78,6 +78,37 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.1.1</version>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>${java.home}/bin/javapackager</executable>
+                    <arguments>
+                        <argument>-deploy</argument>
+                        <argument>-appclass</argument>
+                        <argument>io.bootique.tools.Application</argument>
+                        <argument>-srcdir</argument>
+                        <argument>${project.build.directory}</argument>
+                        <argument>-srcfiles</argument>
+                        <argument>bq-1.0-SNAPSHOT.jar</argument>
+                        <argument>-outdir</argument>
+                        <argument>${project.build.directory}/dist</argument>
+                        <argument>-name</argument>
+                        <argument>bq</argument>
+                        <argument>-native</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
