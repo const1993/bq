@@ -28,6 +28,8 @@ public class DefaultTemplateService implements TemplateService {
 
     public void process() throws TemplateException {
 
+        System.out.println("Start default processing.... "+ templateRoot);
+
         if (templateRoot.toString().startsWith("~") || outputRoot.toString().startsWith("~")) {
             throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
         }

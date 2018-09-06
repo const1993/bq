@@ -17,6 +17,7 @@
         <maven.compiler.target>10</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>io.bootique.tools.Application</main.class>
+        <extract.directory>/usr/local/Cellar</extract.directory>
     </properties>
 
     <dependencyManagement>
@@ -78,37 +79,153 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.1.1</version>
             </plugin>
+
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>single</goal>
                         </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>io.bootique.tools.Application</mainClass>
+                                    <addClasspath>true</addClasspath>
+                                </manifest>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>${java.home}/bin/javapackager</executable>
-                    <arguments>
-                        <argument>-deploy</argument>
-                        <argument>-appclass</argument>
-                        <argument>io.bootique.tools.Application</argument>
-                        <argument>-srcdir</argument>
-                        <argument>${project.build.directory}</argument>
-                        <argument>-srcfiles</argument>
-                        <argument>bq-1.0-SNAPSHOT.jar</argument>
-                        <argument>-outdir</argument>
-                        <argument>${project.build.directory}/dist</argument>
-                        <argument>-name</argument>
-                        <argument>bq</argument>
-                        <argument>-native</argument>
-                    </arguments>
-                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-nodeps</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.tigris.antelope</groupId>
+                        <artifactId>antelopetasks</artifactId>
+                        <version>3.2.10</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>homebrew</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <tasks>
+                                <echo message="starting task....."/>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+                                <taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask"/>
+                                <var name="version-type" value="${project.version}"/>
+
+                                <propertyregex property="version-type" override="true"
+                                               input="${version-type}" regexp=".*\.(.*)" replace="\1"/>
+                                <propertyregex property="version-type" override="true"
+                                               input="${version-type}" regexp="(M)\d+" replace="MILESTONE"/>
+                                <propertyregex property="version-type" override="true"
+                                               input="${version-type}" regexp="(RC)\d+" replace="MILESTONE"/>
+                                <propertyregex property="version-type" override="true"
+                                               input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT"/>
+                                <stringutil string="${version-type}" property="repo">
+                                    <lowercase/>
+                                </stringutil>
+                                <checksum algorithm="sha-256"
+                                          file="${project.build.directory}/bq-${project.version}-bin.tar.gz"
+                                          property="checksum"/>
+                                <echo
+                                        message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo"/>
+                                <copy file="${basedir}/src/main/homebrew/bootique.rb"
+                                      tofile="${project.build.directory}/homebrew/bootique.rb" overwrite="true">
+                                    <filterchain>
+                                        <expandproperties/>
+                                    </filterchain>
+                                </copy>
+                                <attachartifact file="${project.build.directory}/homebrew/bootique.rb"
+                                                classifier="homebrew" type="rb"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                    <!--<execution>-->
+                        <!--<id>scoop</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                        <!--<inherited>false</inherited>-->
+                        <!--<configuration>-->
+                            <!--<target>-->
+                                <!--<taskdef resource="net/sf/antcontrib/antcontrib.properties" />-->
+                                <!--<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />-->
+                                <!--<var name="scoop-version" value="${project.version}" />-->
+                                <!--<propertyregex property="scoop-version" override="true"-->
+                                               <!--input="${scoop-version}" regexp="(.*)\..*" replace="\1" />-->
+                                <!--<var name="version-type" value="${project.version}" />-->
+                                <!--<propertyregex property="version-type" override="true"-->
+                                               <!--input="${version-type}" regexp=".*\.(.*)" replace="\1" />-->
+                                <!--<propertyregex property="version-type" override="true"-->
+                                               <!--input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />-->
+                                <!--<propertyregex property="version-type" override="true"-->
+                                               <!--input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />-->
+                                <!--<propertyregex property="version-type" override="true"-->
+                                               <!--input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />-->
+                                <!--<stringutil string="${version-type}" property="repo">-->
+                                    <!--<lowercase />-->
+                                <!--</stringutil>-->
+                                <!--<checksum algorithm="sha-256"-->
+                                          <!--file="${project.build.directory}/bq-${project.version}-bin.zip"-->
+                                          <!--property="hash" />-->
+                                <!--<echo-->
+                                        <!--message="Customizing scoop for ${project.version} with hash ${hash} in ${repo} repo" />-->
+                                <!--<copy file="${basedir}/src/main/scoop/bq.json"-->
+                                      <!--tofile="${project.build.directory}/scoop/bq.json" overwrite="true">-->
+                                    <!--<filterchain>-->
+                                        <!--<expandproperties>-->
+                                            <!--<propertyset>-->
+                                                <!--<propertyref name="scoop-version" />-->
+                                                <!--<propertyref name="hash" />-->
+                                                <!--<propertyref name="repo" />-->
+                                                <!--<propertyref name="project.version" />-->
+                                            <!--</propertyset>-->
+                                        <!--</expandproperties>-->
+                                    <!--</filterchain>-->
+                                <!--</copy>-->
+                                <!--<attachartifact file="${project.build.directory}/scoop/bq.json"-->
+                                                <!--classifier="scoop" type="json" />-->
+                            <!--</target>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                </executions>
             </plugin>
         </plugins>
+
     </build>
 </project>

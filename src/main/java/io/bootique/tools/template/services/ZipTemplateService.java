@@ -27,13 +27,16 @@ public class ZipTemplateService extends DefaultTemplateService {
 
     @Override
     public void process() throws TemplateException {
+        System.out.println("Start zip processing.... "+ templateRoot);
+
         URI fileURI = templateRoot.toUri();
 
         if (!Files.exists(templateRoot) ) {
+            System.out.println("Not exist!");
             try {
                 String name = templateRoot.toString();
                 URL resource = ClassLoader.getSystemResource(name);
-
+                System.out.println("the uri is " + resource);
                 fileURI = resource.toURI();
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -41,8 +44,10 @@ public class ZipTemplateService extends DefaultTemplateService {
         }
 
         if (fileURI.getScheme().equals("jar") ) {
+            System.out.println("I'm in jar.");
             try {
                 String[] array = fileURI.toString().split("!");
+                System.out.println("It will be placed in thos folder " + outputRoot );
 
                 ZipFile zipFile = new ZipFile(array[0].replace("jar:file:", ""));
                 readInnerZipFile(zipFile, array[1].substring(1, array[1].length()));
@@ -55,6 +60,7 @@ public class ZipTemplateService extends DefaultTemplateService {
         File file = new File(fileURI);
         if (!file.isDirectory()) {
             try {
+                System.out.println("start process jar.");
                 ZipFile zipFile = new ZipFile(file);
                 parseZipTemplate(zipFile);
                 return;

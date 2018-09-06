@@ -1,0 +1,26 @@
+{
+  "homepage": "https://bootique.io/bootique-tools/",
+  "version": "${scoop-version}",
+  "license": "Apache 2.0",
+  "hash": "${hash}",
+  "url":  "file:\\\\${project.build.directory}\\bq-${project.version}-bin.tar.gz",
+  "extract_dir": "bq\\${project.version}",
+  "bin": "bin\\bq.bat",
+  "suggest": {
+    "JDK": [
+      "java/oraclejdk",
+      "java/openjdk"
+    ]
+  },
+  "checkver": {
+    "github": "https://github.com/bootique-tools/bq.git",
+    "re": "/releases/tag/(?:v)?(2[\\d.]+)\\.RELEASE"
+  },
+  "autoupdate": {
+    "url": "file:\\\\${project.build.directory}\\bq-${project.version}-bin.tar.gz",
+    "extract_dir": "bq-$version.RELEASE",
+    "hash": {
+      "url": "$url.sha256"
+    }
+  }
+}

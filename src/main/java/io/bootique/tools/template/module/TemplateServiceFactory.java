@@ -25,6 +25,7 @@ public class TemplateServiceFactory {
     private List<SourceSetFactory> sourceSets;
 
     TemplateService createTemplateService(Map<String, TemplateProcessor> processorMap) {
+        System.out.println("output: " + output);
 
         if (moduleName != null & templateRoot == null) {
             return new ModuleTemplateService(moduleName,

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+if [ -z "${BQ_HOME}" ]; then
+    # Resolve links: $0 may be a link
+    PRG="$0"
+    # Need this for relative symlinks.
+    while [ -h "$PRG" ] ; do
+	    ls=`ls -ld "$PRG"`
+	    link=`expr "$ls" : '.*-> \(.*\)$'`
+	    if expr "$link" : '/.*' > /dev/null; then
+		    PRG="$link"
+	    else
+		    PRG=`dirname "$PRG"`"/$link"
+	    fi
+    done
+    SAVED="`pwd`"
+    cd "`dirname \"$PRG\"`/../" >&-
+    export BQ_HOME="`pwd -P`"
+    cd "$SAVED" >&-
+fi
+
+CLASSPATH=.:${BQ_HOME}/bin
+if [ -d ${BQ_HOME}/ext ]; then
+	CLASSPATH=$CLASSPATH:${BQ_HOME}/ext
+fi
+for f in ${BQ_HOME}/lib/*; do
+	CLASSPATH=$CLASSPATH:$f
+done
+
+
+${java.home}/bin/java -cp  ${CLASSPATH} io.bootique.tools.Application $*
