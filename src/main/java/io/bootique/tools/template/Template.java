@@ -9,14 +9,14 @@ public class Template {
     private final Path path;
     private final String content;
 
-    public Template(Path path, String content, String name) {
+    public Template(Path path, String content, String name, String dotSeparatedPath) {
         this.path = Objects.requireNonNull(path);
         this.content = Objects.requireNonNull(content);
         this.name = name;
     }
 
     public Template(Path path, String content) {
-        this(path, content, null);
+        this(path, content, null, null);
     }
 
     public Path getPath() {

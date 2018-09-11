@@ -14,11 +14,10 @@ import io.bootique.tools.template.services.ModuleTemplateService;
 import io.bootique.tools.template.services.TemplateService;
 import io.bootique.tools.template.services.ZipTemplateService;
 import io.bootique.tools.template.processor.TemplateProcessor;
+import io.bootique.tools.template.command.NewModuleCommand;
 
 @BQConfig("Template configuration")
 public class TemplateServiceFactory {
-
-    private String moduleName;
 
     private File templateRoot;
     private File output;
@@ -27,9 +26,8 @@ public class TemplateServiceFactory {
     TemplateService createTemplateService(Map<String, TemplateProcessor> processorMap) {
         System.out.println("output: " + output);
 
-        if (moduleName != null & templateRoot == null) {
-            return new ModuleTemplateService(moduleName,
-                    output != null ? output.toPath() : null,
+        if (NewModuleCommand.class.getName().equals(System.getProperty(NewModuleCommand.COMMAND_TYPE))) {
+            return new ModuleTemplateService(output != null ? output.toPath() : null,
                     sourceSets != null ? sourceSets.stream()
                             .map(factory -> factory.createSourceSet(processorMap))
                             .collect(Collectors.toList()) : Collections.emptyList()
@@ -66,16 +64,6 @@ public class TemplateServiceFactory {
     @BQConfigProperty("Template source sets")
     public void setSourceSets(List<SourceSetFactory> sourceSets) {
         this.sourceSets = sourceSets;
-    }
-
-
-    public String getModuleName() {
-        return moduleName;
-    }
-
-    @BQConfigProperty("Module name")
-    public void setModuleName(String moduleName) {
-        this.moduleName = moduleName;
     }
 
 }

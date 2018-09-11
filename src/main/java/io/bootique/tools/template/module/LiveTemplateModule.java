@@ -1,6 +1,8 @@
 package io.bootique.tools.template.module;
 
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.inject.Binder;
 import com.google.inject.Provider;
@@ -9,15 +11,14 @@ import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
-import io.bootique.cli.Cli;
 import io.bootique.cli.CliFactory;
+import io.bootique.command.Command;
 import io.bootique.command.CommandManager;
-import io.bootique.command.CommandWithMetadata;
 import io.bootique.config.ConfigurationFactory;
-import io.bootique.jopt.JoptCliFactory;
 import io.bootique.meta.application.ApplicationMetadata;
-import io.bootique.meta.application.CommandMetadata;
 import io.bootique.meta.application.OptionMetadata;
+import io.bootique.tools.template.command.InteractiveCommandMetadata;
+import io.bootique.tools.template.command.NewProjectCommand;
 import io.bootique.tools.template.services.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
@@ -28,7 +29,8 @@ import io.bootique.tools.template.processor.ModuleProviderProcessor;
 import io.bootique.tools.template.processor.ModulesProcessor;
 import io.bootique.tools.template.processor.TemplateProcessor;
 import io.bootique.tools.template.services.cli.InteractiveCliFactory;
-import io.bootique.tools.template.services.cli.ModuleCommand;
+import io.bootique.tools.template.command.NewModuleCommand;
+import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 import io.bootique.type.TypeRef;
 
 public class LiveTemplateModule extends ConfigModule {
@@ -40,17 +42,26 @@ public class LiveTemplateModule extends ConfigModule {
 
         OptionMetadata helloTemplateOption = OptionMetadata.builder("hello-tpl").description("Load template by option").build();
         OptionMetadata gradleTemplateOption = OptionMetadata.builder("gradle-hello-tpl").description("Load template by option").build();
-        OptionMetadata moduleOption = OptionMetadata.builder("module-name").description("Load module").configPath("templates.moduleName")
-                .defaultValue("ExampleModule").valueRequired().build();
+        OptionMetadata moduleOption = OptionMetadata.builder("module-template").description("Load module template").build();
 
+        InteractiveOptionMetadata nameOption = InteractiveOptionMetadata
+                .builder("name")
+                .valueRequired("module_name")
+                .interactive()
+                .description("Module name.")
+                .build();
+        InteractiveOptionMetadata package_path = InteractiveOptionMetadata
+                .builder("java.package")
+                .valueRequired("package_path")
+                .interactive()
+                .description("Dot separated module path executed.")
+                .build();
         BQCoreModule.extend(binder)
                 .addOption(gradleTemplateOption).addConfigOnOption(gradleTemplateOption.getName(), "classpath:templates/gradle-hello-tpl.yml")
-//                .addOption(helloTemplateOption).addConfigOnOption(helloTemplateOption.getName(), "classpath:templates/hello-tpl.yml")
-//                .addOption(moduleOption)
-                .addConfigOnOption(moduleOption.getName(), "classpath:templates/module-tpl.yml")
-                .addCommand(NewProjectCommand.class)
-                .addCommand(new ModuleCommand(CommandMetadata.builder("module")))
-        ;
+                .addOption(helloTemplateOption).addConfigOnOption(helloTemplateOption.getName(), "classpath:templates/hello-tpl.yml")
+                .addOption(moduleOption).addConfigOnOption(moduleOption.getName(), "classpath:templates/module-tpl.yml")
+                .addCommand(new NewProjectCommand(Stream.of(package_path).collect(Collectors.toList())))
+                .addCommand(NewModuleCommand.class);
 
         contributeProcessor(binder, "module", ModulesProcessor.class);
         contributeProcessor(binder, "moduleProvider", ModuleProviderProcessor.class);

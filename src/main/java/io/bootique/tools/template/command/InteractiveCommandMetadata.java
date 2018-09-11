@@ -1,4 +1,4 @@
-package io.bootique.tools.template.services.cli;
+package io.bootique.tools.template.command;
 
 import io.bootique.command.Command;
 import io.bootique.meta.application.CommandMetadata;
@@ -120,7 +120,7 @@ public class InteractiveCommandMetadata extends CommandMetadata {
         }
 
 
-        public Builder addInteractiveOptions(Collection<InteractiveOptionMetadata> options) {
+        public Builder addInteractiveOptions(Collection<OptionMetadata> options) {
             this.command.options.addAll(options);
             return this;
         }

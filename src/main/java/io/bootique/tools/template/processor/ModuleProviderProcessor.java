@@ -3,6 +3,7 @@ package io.bootique.tools.template.processor;
 import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
+import io.bootique.tools.template.command.AbstractInteractiveCommand;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,7 +27,7 @@ public class ModuleProviderProcessor implements TemplateProcessor {
 
         String content = template.getContent();
 
-        String name = template.getName();
+        String name = propertyService.getProperty(AbstractInteractiveCommand.NAME);
 
         if (name == null) {
             return content;

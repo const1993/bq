@@ -51,21 +51,7 @@ public class DefaultTemplateService implements TemplateService {
 
     public void process(Map<String, String> parameters) throws TemplateException {
         this.parameters = parameters;
-        System.out.println("Start default processing.... "+ templateRoot);
-
-        if (templateRoot.toString().startsWith("~") || outputRoot.toString().startsWith("~")) {
-            throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
-        }
-
-        if (templateRoot.toString().startsWith("jar:file:")) {
-            throw new TemplateException("Cant read jar file " + templateRoot);
-        }
-
-        try {
-            Files.walk(templateRoot).forEach(this::processPath);
-        } catch (IOException ex) {
-            throw new TemplateException("Can't read template root directory " + templateRoot, ex);
-        }
+        process();
     }
 
     void processPath(Path path) {

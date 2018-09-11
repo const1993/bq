@@ -4,14 +4,13 @@ import io.bootique.jopt.JoptCli;
 import joptsimple.OptionSet;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class InteractiveCli extends JoptCli {
 
-    private Map<String, Boolean> interactiveMap;
+    private List<String> interactiveMap;
 
-    public InteractiveCli(OptionSet parsed, String commandName,  Map<String, Boolean> interactiveMap) {
+    public InteractiveCli(OptionSet parsed, String commandName,  List<String> interactiveMap) {
         super(parsed, commandName);
         this.interactiveMap = interactiveMap;
     }
@@ -20,7 +19,7 @@ public class InteractiveCli extends JoptCli {
     @Override
     public List<String> optionStrings(String name) {
         List<String> strings = super.optionStrings(name);
-        if (strings.isEmpty() && interactiveMap.get(name)) {
+        if (strings.isEmpty() && interactiveMap.contains(name)) {
             System.out.println("Please mention not recognized option " + name + ":");
             Scanner scanner = new Scanner(System.in);
             strings.add(String.valueOf(scanner.nextLine()));

@@ -4,12 +4,15 @@ import io.bootique.BQRuntime;
 import io.bootique.test.junit.BQTestFactory;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
+import io.bootique.tools.template.command.NewModuleCommand;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,14 +21,23 @@ import static org.junit.Assert.assertEquals;
  */
 public class ApplicationTest {
 
+    public static final String TEST_PACKAGE = "io.bootique.demo";
+    public static final String TEST_CLASS_NAME = "Test";
+    public static final String DEFAULT_FOLDER = System.getProperty("user.dir");
+
     @Rule
     public BQTestFactory testFactory = new BQTestFactory();
+
+    @Before
+    public void before() {
+        System.setProperty("user.dir", DEFAULT_FOLDER + "/target/tmp-output");
+    }
 
     @Test
     public void runtimeTest() throws IOException {
         cleanup();
         BQRuntime runtime = testFactory.app()
-                .args("-c=classpath:test-tpl/hello-tpl.yml")
+                .args("--new-project", "-c=classpath:test-tpl/hello-tpl.yml")
                 .autoLoadModules()
                 .createRuntime();
 
@@ -40,7 +52,7 @@ public class ApplicationTest {
     public void gradleRuntimeTest() throws IOException {
         cleanup();
         BQRuntime runtime = testFactory.app()
-                .args("-c=classpath:test-tpl/gradle-hello-tpl.yml")
+                .args("--new-project", "--gradle-hello-tpl")
                 .autoLoadModules()
                 .createRuntime();
 
@@ -54,9 +66,8 @@ public class ApplicationTest {
     @Test
     public void loadFromClasspathTest() throws IOException {
         cleanup();
-        System.setProperty("user.dir", System.getProperty("user.dir") + "/target/tmp-output");
         BQRuntime runtime = testFactory.app()
-                .args("--hello-tpl")
+                .args("--new-project", "--hello-tpl")
                 .autoLoadModules()
                 .createRuntime();
 
@@ -70,10 +81,9 @@ public class ApplicationTest {
     @Test
     public void loadGradleProjectFromClasspathTest() throws IOException {
         cleanup();
-        System.setProperty("user.dir", System.getProperty("user.dir") + "/target/tmp-output");
 
         BQRuntime runtime = testFactory.app()
-                .args("--gradle-hello-tpl")
+                .args("--new-project", "--gradle-hello-tpl")
                 .autoLoadModules()
                 .createRuntime();
 
@@ -87,18 +97,20 @@ public class ApplicationTest {
     @Test
     public void createModuleTest() throws IOException {
         cleanup();
-        System.setProperty("user.dir", System.getProperty("user.dir") + "/target/tmp-output");
+        System.setProperty(NewModuleCommand.COMMAND_TYPE, NewModuleCommand.class.getName());
 
         BQRuntime runtime = testFactory.app()
-                .args("--module-name=Test")
+                .args("--new-module", "-c=classpath:templates/module-tpl.yml", "--name=Test", "-java.package=io.bootique.demo")
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+        propertyService.setProperty("name", "Test");
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
+        templateService.process(Map.of(NewModuleCommand.NAME, TEST_CLASS_NAME, NewModuleCommand.PACKAGE, TEST_PACKAGE));
+
     }
 
 

@@ -1,29 +1,29 @@
-package io.bootique.tools.template.services.cli;
+package io.bootique.tools.template.command;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import io.bootique.cli.Cli;
 import io.bootique.command.CommandOutcome;
-import io.bootique.meta.application.CommandMetadata;
+import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
 import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ModuleCommand extends InteractiveCommandWithMetadata {
+public class NewModuleCommand extends AbstractInteractiveCommand {
 
-
-    public static final String NAME = "name";
-    public static final String PACKAGE = "package";
     @Inject
     Provider<TemplateService> templateService;
 
-    public ModuleCommand(CommandMetadata.Builder metadataBuilder) {
+    @Inject
+    Provider<PropertyService> propertyServiceProvider;
+
+
+    public NewModuleCommand() {
         super(InteractiveCommandMetadata
-                .interactiveBuilder(ModuleCommand.class)
-                .name("create-module")
+                .interactiveBuilder(NewModuleCommand.class)
+                .name("new-module")
                 .description("Creates new module.")
                 .addInteractiveOptions(
                         Stream.of(
@@ -39,6 +39,7 @@ public class ModuleCommand extends InteractiveCommandWithMetadata {
                                         .interactive()
                                         .description("Dot separated module path executed.")
                                         .build())
+
                                 .collect(Collectors.toList()
                                 ))
                 .build());
@@ -46,9 +47,22 @@ public class ModuleCommand extends InteractiveCommandWithMetadata {
 
     @Override
     public CommandOutcome run(Cli cli) {
-        String name = cli.optionString(NAME);
-        String pack = cli.optionString(PACKAGE);
-        templateService.get().process(Map.of(NAME, name, PACKAGE, pack));
+
+        PropertyService propertyService = propertyServiceProvider.get();
+        if (!propertyService.hasProperty(NAME)) {
+            String value = cli.optionString(NAME);
+            System.out.println("Read property name: " + value);
+            propertyService.setProperty(NAME, value);
+            System.out.println("what is in properties: " + propertyService.getProperty(NAME));
+        }
+
+        if (!propertyService.hasProperty(PACKAGE)) {
+            propertyService.setProperty(PACKAGE, cli.optionString(PACKAGE));
+
+        }
+
+        System.setProperty(COMMAND_TYPE, NewModuleCommand.class.getName());
+        templateService.get().process();
         return CommandOutcome.succeeded();
     }
 }

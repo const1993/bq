@@ -8,11 +8,13 @@ import io.bootique.command.CommandManager;
 import io.bootique.command.ManagedCommand;
 import io.bootique.jopt.JoptCliFactory;
 import io.bootique.meta.application.ApplicationMetadata;
+import io.bootique.meta.application.OptionMetadata;
 import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,10 +42,11 @@ public class InteractiveCliFactory extends JoptCliFactory {
         OptionSet parsed = parse(args);
         String commandName = commandName(parsed);
         ManagedCommand managedCommand = commandManagerProvider.get().lookupByName(commandName);
-        Map<String, Boolean> interactiveMap = managedCommand.getCommand().getMetadata().getOptions()
+        List<String> interactives = managedCommand.getCommand().getMetadata().getOptions()
                 .stream().filter(o -> o instanceof InteractiveOptionMetadata && ((InteractiveOptionMetadata) o).isInteractive())
-                .collect(Collectors.toMap(o -> o.getName(), o -> ((InteractiveOptionMetadata) o).isInteractive()));
-        return new InteractiveCli(parsed, commandName, interactiveMap);
+                .map(o -> o.getName())
+                .collect(Collectors.toList());
+        return new InteractiveCli(parsed, commandName, interactives);
     }
 
     private OptionSet parse(String[] args) {

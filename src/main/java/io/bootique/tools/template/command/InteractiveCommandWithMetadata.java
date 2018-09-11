@@ -1,4 +1,4 @@
-package io.bootique.tools.template.services.cli;
+package io.bootique.tools.template.command;
 
 import io.bootique.cli.Cli;
 import io.bootique.command.Command;
