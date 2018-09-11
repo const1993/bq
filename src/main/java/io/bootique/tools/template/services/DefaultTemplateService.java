@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import io.bootique.tools.template.Template;
 import io.bootique.tools.template.TemplateException;
@@ -17,10 +19,12 @@ public class DefaultTemplateService implements TemplateService {
     protected final Path templateRoot;
     protected final Path outputRoot;
     protected final List<SourceSet> sourceSets;
+    protected Map<String, String> parameters;
 
     public DefaultTemplateService(Path templateRoot, Path outputRoot, List<SourceSet> sourceSets) {
         this.templateRoot = templateRoot;
         this.outputRoot = outputRoot == null ? Paths.get(System.getProperty("user.dir")) : outputRoot;
+        this.parameters = Collections.emptyMap();
         this.sourceSets = sourceSets.isEmpty()
                 ? List.of(new SourceSet())  // will just copy everything to destination root
                 : sourceSets;
@@ -28,7 +32,7 @@ public class DefaultTemplateService implements TemplateService {
 
     public void process() throws TemplateException {
 
-        System.out.println("Start default processing.... "+ templateRoot);
+        System.out.println("Start default processing.... " + templateRoot);
 
         if (templateRoot.toString().startsWith("~") || outputRoot.toString().startsWith("~")) {
             throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
@@ -45,6 +49,24 @@ public class DefaultTemplateService implements TemplateService {
         }
     }
 
+    public void process(Map<String, String> parameters) throws TemplateException {
+        this.parameters = parameters;
+        System.out.println("Start default processing.... "+ templateRoot);
+
+        if (templateRoot.toString().startsWith("~") || outputRoot.toString().startsWith("~")) {
+            throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
+        }
+
+        if (templateRoot.toString().startsWith("jar:file:")) {
+            throw new TemplateException("Cant read jar file " + templateRoot);
+        }
+
+        try {
+            Files.walk(templateRoot).forEach(this::processPath);
+        } catch (IOException ex) {
+            throw new TemplateException("Can't read template root directory " + templateRoot, ex);
+        }
+    }
 
     void processPath(Path path) {
         // TODO: any good use-case for empty dirs in template projects? skip for now.

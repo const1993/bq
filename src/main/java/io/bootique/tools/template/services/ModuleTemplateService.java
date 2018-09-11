@@ -20,7 +20,7 @@ public class ModuleTemplateService extends ZipTemplateService {
 
     @Override
     Template loadTemplate(Path path, String content) {
-        return new Template(outputRoot.resolve(path), content, name);
+        return new Template(outputRoot.resolve(path), content, parameters.get("name"));
     }
 
 }

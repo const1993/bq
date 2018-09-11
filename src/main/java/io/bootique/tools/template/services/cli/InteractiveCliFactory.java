@@ -1,0 +1,67 @@
+package io.bootique.tools.template.services.cli;
+
+import com.google.inject.Provider;
+import io.bootique.BootiqueException;
+import io.bootique.cli.Cli;
+import io.bootique.cli.NoArgsCli;
+import io.bootique.command.CommandManager;
+import io.bootique.command.ManagedCommand;
+import io.bootique.jopt.JoptCliFactory;
+import io.bootique.meta.application.ApplicationMetadata;
+import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class InteractiveCliFactory extends JoptCliFactory {
+
+    private volatile OptionParser optionParser;
+    private final Object optionParserLock;
+    private Provider<CommandManager> commandManagerProvider;
+
+    public InteractiveCliFactory(Provider<CommandManager> commandManagerProvider, ApplicationMetadata application) {
+        super(commandManagerProvider, application);
+
+        this.commandManagerProvider = commandManagerProvider;
+        this.optionParserLock = new Object();
+    }
+
+    @Override
+    public Cli createCli(String[] args) {
+        OptionSet parse = parse(args);
+
+        if (args.length == 0) {
+            return NoArgsCli.getInstance();
+        }
+
+        OptionSet parsed = parse(args);
+        String commandName = commandName(parsed);
+        ManagedCommand managedCommand = commandManagerProvider.get().lookupByName(commandName);
+        Map<String, Boolean> interactiveMap = managedCommand.getCommand().getMetadata().getOptions()
+                .stream().filter(o -> o instanceof InteractiveOptionMetadata && ((InteractiveOptionMetadata) o).isInteractive())
+                .collect(Collectors.toMap(o -> o.getName(), o -> ((InteractiveOptionMetadata) o).isInteractive()));
+        return new InteractiveCli(parsed, commandName, interactiveMap);
+    }
+
+    private OptionSet parse(String[] args) {
+        try {
+            return getParser().parse(args);
+        } catch (OptionException e) {
+            throw new BootiqueException(1, e.getMessage(), e);
+        }
+    }
+
+    private OptionParser getParser() {
+        if (optionParser == null) {
+            synchronized (optionParserLock) {
+                if (optionParser == null) {
+                    optionParser = createParser();
+                }
+            }
+        }
+        return optionParser;
+    }
+}
