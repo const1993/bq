@@ -22,13 +22,13 @@ public class MavenProcessor extends XMLTemplateProcessor {
 
         try {
             Node artefactId = (Node)xpath.evaluate("/project/artifactId", document, XPathConstants.NODE);
-            artefactId.setTextContent(propertyService.getProperty("project.artifactId"));
+            artefactId.setTextContent(propertyService.getProperty("maven.artifactId"));
 
             Node groupId = (Node)xpath.evaluate("/project/groupId", document, XPathConstants.NODE);
-            groupId.setTextContent(propertyService.getProperty("project.groupId"));
+            groupId.setTextContent(propertyService.getProperty("maven.groupId"));
 
             Node version = (Node)xpath.evaluate("/project/version", document, XPathConstants.NODE);
-            version.setTextContent(propertyService.getProperty("project.version"));
+            version.setTextContent(propertyService.getProperty("maven.version"));
         } catch (XPathExpressionException ex) {
             throw new TemplateException("Unable to modify xml, is template a proper maven xml?", ex);
         }

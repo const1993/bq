@@ -47,6 +47,7 @@ public class JavaPackageProcessor implements TemplateProcessor {
         Path packagePath = packageToPath(propertyService.getProperty(PACKAGE));
         char separator = File.separatorChar;
         pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
+        pathStr = pathStr.replace(EXAMPLE_CLASS+".java", propertyService.getProperty(NAME)+".java");
         return Paths.get(pathStr);
     }
 
