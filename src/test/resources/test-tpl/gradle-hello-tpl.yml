@@ -2,7 +2,7 @@ properties:
   java.package: "io.bootique.demo"
   gradle.group: "io.bootique.demo"
   gradle.project.name: "bootique-demo"
-  gradle.version: "0.26-SNAPSHOT"
+  gradle.version: "1.0.RC1"
 
 templates:
   templateRoot: "target/test-classes/test-tpl/gradle-hello-tpl"

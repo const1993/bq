@@ -10,11 +10,9 @@ import java.util.stream.Collectors;
 import io.bootique.annotation.BQConfig;
 import io.bootique.annotation.BQConfigProperty;
 import io.bootique.tools.template.services.DefaultTemplateService;
-import io.bootique.tools.template.services.ModuleTemplateService;
 import io.bootique.tools.template.services.TemplateService;
 import io.bootique.tools.template.services.ZipTemplateService;
 import io.bootique.tools.template.processor.TemplateProcessor;
-import io.bootique.tools.template.command.NewModuleCommand;
 
 @BQConfig("Template configuration")
 public class TemplateServiceFactory {
@@ -25,14 +23,6 @@ public class TemplateServiceFactory {
 
     TemplateService createTemplateService(Map<String, TemplateProcessor> processorMap) {
         System.out.println("output: " + output);
-
-        if (NewModuleCommand.class.getName().equals(System.getProperty(NewModuleCommand.COMMAND_TYPE))) {
-            return new ModuleTemplateService(output != null ? output.toPath() : null,
-                    sourceSets != null ? sourceSets.stream()
-                            .map(factory -> factory.createSourceSet(processorMap))
-                            .collect(Collectors.toList()) : Collections.emptyList()
-            );
-        }
 
         if (templateRoot != null && (templateRoot.toString().endsWith(".zip") || !Files.exists(templateRoot.toPath())) ) {
             return new ZipTemplateService(templateRoot.toPath(),

@@ -4,7 +4,6 @@ import io.bootique.command.Command;
 import io.bootique.meta.application.CommandMetadata;
 import io.bootique.meta.application.OptionMetadata;
 import io.bootique.names.ClassToName;
-import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 
 import java.util.ArrayList;
 import java.util.Collection;

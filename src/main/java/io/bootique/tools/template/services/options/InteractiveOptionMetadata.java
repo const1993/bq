@@ -165,6 +165,8 @@ public class InteractiveOptionMetadata extends OptionMetadata {
             metadata.configPath = optionMetadata.getConfigPath();
             metadata.defaultValue = optionMetadata.getDefaultValue();
             metadata.valueCardinality = optionMetadata.getValueCardinality();
+            metadata.valueName = optionMetadata.getValueName();
+
             return metadata;
         }
 

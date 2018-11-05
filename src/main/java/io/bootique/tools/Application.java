@@ -10,6 +10,5 @@ public class Application {
                 .autoLoadModules()
                 .exec()
                 .exit();
-
     }
 }

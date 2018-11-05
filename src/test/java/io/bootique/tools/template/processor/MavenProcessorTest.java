@@ -24,7 +24,7 @@ public class MavenProcessorTest {
         PropertyService propertyService = new DefaultPropertyService();
         propertyService.setProperty("maven.artifactId", "bootique-tools");
         propertyService.setProperty("maven.groupId", "io.bootique.tools");
-        propertyService.setProperty("maven.version", "0.26-SNAPSHOT");
+        propertyService.setProperty("maven.version", "1.0.RC1");
         processor.propertyService = propertyService;
     }
 
@@ -67,7 +67,7 @@ public class MavenProcessorTest {
                 "\n" +
                 "    <groupId>io.bootique.tools</groupId>\n" +
                 "    <artifactId>bootique-tools</artifactId>\n" +
-                "    <version>0.26-SNAPSHOT</version>\n" +
+                "    <version>1.0.RC1-SNAPSHOT</version>\n" +
                 "\n" +
                 "   <build>\n" +
                 "        <plugins>\n" +

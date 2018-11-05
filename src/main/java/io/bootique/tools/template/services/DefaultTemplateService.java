@@ -6,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import io.bootique.tools.template.Template;
 import io.bootique.tools.template.TemplateException;
@@ -19,12 +17,10 @@ public class DefaultTemplateService implements TemplateService {
     protected final Path templateRoot;
     protected final Path outputRoot;
     protected final List<SourceSet> sourceSets;
-    protected Map<String, String> parameters;
 
     public DefaultTemplateService(Path templateRoot, Path outputRoot, List<SourceSet> sourceSets) {
         this.templateRoot = templateRoot;
         this.outputRoot = outputRoot == null ? Paths.get(System.getProperty("user.dir")) : outputRoot;
-        this.parameters = Collections.emptyMap();
         this.sourceSets = sourceSets.isEmpty()
                 ? List.of(new SourceSet())  // will just copy everything to destination root
                 : sourceSets;
@@ -47,11 +43,6 @@ public class DefaultTemplateService implements TemplateService {
         } catch (IOException ex) {
             throw new TemplateException("Can't read template root directory " + templateRoot, ex);
         }
-    }
-
-    public void process(Map<String, String> parameters) throws TemplateException {
-        this.parameters = parameters;
-        process();
     }
 
     void processPath(Path path) {

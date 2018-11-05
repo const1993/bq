@@ -8,9 +8,13 @@ import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+
 public class JavaPackageProcessor implements TemplateProcessor {
 
     protected static final String TEMPLATE_PACKAGE = "example";
+    protected static final String EXAMPLE_CLASS = "Test";
 
     @Inject
     PropertyService propertyService;
@@ -26,21 +30,21 @@ public class JavaPackageProcessor implements TemplateProcessor {
         String content = template.getContent();
         content = replacePackageDeclaration(content);
         content = replaceImportDeclaration(content);
-        return content;
+        return content.replace("class " + EXAMPLE_CLASS, "class " + propertyService.getProperty(NAME));
     }
 
     String replacePackageDeclaration(String content) {
-        return content.replaceAll("\\bpackage " + TEMPLATE_PACKAGE, "package " + propertyService.getProperty("java.package"));
+        return content.replaceAll("\\bpackage " + TEMPLATE_PACKAGE, "package " + propertyService.getProperty(PACKAGE));
     }
 
     String replaceImportDeclaration(String content) {
-        return content.replaceAll("\\bimport " + TEMPLATE_PACKAGE, "import " + propertyService.getProperty("java.package"));
+        return content.replaceAll("\\bimport " + TEMPLATE_PACKAGE, "import " + propertyService.getProperty(PACKAGE));
     }
 
     Path outputPath(Template template) {
         Path input = template.getPath();
         String pathStr = input.toString();
-        Path packagePath = packageToPath(propertyService.getProperty("java.package"));
+        Path packagePath = packageToPath(propertyService.getProperty(PACKAGE));
         char separator = File.separatorChar;
         pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
         return Paths.get(pathStr);

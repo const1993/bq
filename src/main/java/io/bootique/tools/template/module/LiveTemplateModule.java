@@ -12,12 +12,10 @@ import com.google.inject.multibindings.MapBinder;
 import io.bootique.BQCoreModule;
 import io.bootique.ConfigModule;
 import io.bootique.cli.CliFactory;
-import io.bootique.command.Command;
 import io.bootique.command.CommandManager;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.meta.application.ApplicationMetadata;
 import io.bootique.meta.application.OptionMetadata;
-import io.bootique.tools.template.command.InteractiveCommandMetadata;
 import io.bootique.tools.template.command.NewProjectCommand;
 import io.bootique.tools.template.services.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
@@ -33,6 +31,9 @@ import io.bootique.tools.template.command.NewModuleCommand;
 import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 import io.bootique.type.TypeRef;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+
 public class LiveTemplateModule extends ConfigModule {
 
     @Override
@@ -45,13 +46,13 @@ public class LiveTemplateModule extends ConfigModule {
         OptionMetadata moduleOption = OptionMetadata.builder("module-template").description("Load module template").build();
 
         InteractiveOptionMetadata nameOption = InteractiveOptionMetadata
-                .builder("name")
+                .builder(NAME)
                 .valueRequired("module_name")
                 .interactive()
                 .description("Module name.")
                 .build();
         InteractiveOptionMetadata package_path = InteractiveOptionMetadata
-                .builder("java.package")
+                .builder(PACKAGE)
                 .valueRequired("package_path")
                 .interactive()
                 .description("Dot separated module path executed.")
@@ -61,7 +62,7 @@ public class LiveTemplateModule extends ConfigModule {
                 .addOption(helloTemplateOption).addConfigOnOption(helloTemplateOption.getName(), "classpath:templates/hello-tpl.yml")
                 .addOption(moduleOption).addConfigOnOption(moduleOption.getName(), "classpath:templates/module-tpl.yml")
                 .addCommand(new NewProjectCommand(Stream.of(package_path).collect(Collectors.toList())))
-                .addCommand(NewModuleCommand.class);
+                .addCommand(new NewModuleCommand(Stream.of(nameOption, package_path).collect(Collectors.toList())));
 
         contributeProcessor(binder, "module", ModulesProcessor.class);
         contributeProcessor(binder, "moduleProvider", ModuleProviderProcessor.class);
@@ -93,7 +94,10 @@ public class LiveTemplateModule extends ConfigModule {
     public PropertyService createPropertyService(ConfigurationFactory configurationFactory) {
         Map<String, String> props = configurationFactory.config(new TypeRef<>() {}, "properties");
         PropertyService propertyService = new DefaultPropertyService();
-        props.forEach(propertyService::setProperty);
+        if (props != null) {
+            props.forEach(propertyService::setProperty);
+        }
+
         return propertyService;
     }
 

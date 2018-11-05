@@ -4,7 +4,6 @@ import io.bootique.BQRuntime;
 import io.bootique.test.junit.BQTestFactory;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
-import io.bootique.tools.template.command.NewModuleCommand;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,8 +11,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -42,7 +42,8 @@ public class ApplicationTest {
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
-        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+        assertEquals(TEST_PACKAGE, propertyService.getProperty(PACKAGE));
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -57,7 +58,9 @@ public class ApplicationTest {
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
-        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
+
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -72,7 +75,8 @@ public class ApplicationTest {
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
-        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -88,7 +92,8 @@ public class ApplicationTest {
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
-        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -97,22 +102,20 @@ public class ApplicationTest {
     @Test
     public void createModuleTest() throws IOException {
         cleanup();
-        System.setProperty(NewModuleCommand.COMMAND_TYPE, NewModuleCommand.class.getName());
 
         BQRuntime runtime = testFactory.app()
-                .args("--new-module", "-c=classpath:templates/module-tpl.yml", "--name=Test", "-java.package=io.bootique.demo")
+                .args("--new-module", "-m" )
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
-        assertEquals("io.bootique.demo", propertyService.getProperty("java.package"));
-        propertyService.setProperty("name", "Test");
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process(Map.of(NewModuleCommand.NAME, TEST_CLASS_NAME, NewModuleCommand.PACKAGE, TEST_PACKAGE));
+        templateService.process();
 
     }
-
 
     private void cleanup() throws IOException {
         Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "test.file"));
@@ -120,5 +123,7 @@ public class ApplicationTest {
         Files.deleteIfExists(Paths.get("target", "tmp-output", "settings.gradle"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "pom.xml"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "Test.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "resources", "META-INF", "io.bootique.BQModuleProvider"));
+
     }
 }

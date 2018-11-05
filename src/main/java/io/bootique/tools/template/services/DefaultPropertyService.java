@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultPropertyService implements PropertyService {
 
+    public static String NAME = "name";
+    public static String PACKAGE = "java.package";
+
     private final Map<String, String> propertyMap = new ConcurrentHashMap<>();
 
     @Override

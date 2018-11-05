@@ -20,9 +20,9 @@ public class GradleProcessor implements TemplateProcessor {
 
     String processContent(String content) {
 
-        return content.replaceAll("rootProject.name = " + EXAMPLE_PROJECT, "rootProject.name = '" + propertyService.getProperty("gradle.project.name") + "'")
-                .replaceAll("group = " + EXAMPLE_GROUP, "group = '" + propertyService.getProperty("gradle.group") + "'")
-                .replaceAll("version = " + GRADLE_PROJECT_VERSION, "version = '" + propertyService.getProperty("gradle.version") + "'");
+        return content.replaceAll("rootProject.name = " + EXAMPLE_PROJECT, "rootProject.name = '" + propertyService.getProperty("project.artifactId") + "'")
+                .replaceAll("group = " + EXAMPLE_GROUP, "group = '" + propertyService.getProperty("project.groupId") + "'")
+                .replaceAll("version = " + GRADLE_PROJECT_VERSION, "version = '" + propertyService.getProperty("project.version") + "'");
     }
 
 }

@@ -1,8 +1,8 @@
 properties:
   java.package: "io.bootique.demo"
-  maven.groupId: "io.bootique.demo"
-  maven.artifactId: "bootique-demo"
-  maven.version: "0.26-SNAPSHOT"
+  project.groupId: "io.bootique.demo"
+  project.artifactId: "bootique-demo"
+  project.version: "1.0.RC1"
 
 templates:
   templateRoot: "templates/hello-tpl.zip"

@@ -8,6 +8,8 @@ import io.bootique.tools.template.Template;
 import org.junit.Before;
 import org.junit.Test;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
 import static org.junit.Assert.*;
 
 public class JavaPackageProcessorTest {
@@ -18,12 +20,14 @@ public class JavaPackageProcessorTest {
     public void prepareProcessor() {
         processor = new JavaPackageProcessor();
         processor.propertyService = new DefaultPropertyService();
-        processor.propertyService.setProperty("java.package", "io.bootique.test");
+        processor.propertyService.setProperty(PACKAGE, "io.bootique.test");
+        processor.propertyService.setProperty(NAME, "MyClass");
+
     }
 
     @Test
     public void processTemplate() {
-        Template template = new Template(Paths.get("example", "MyClass.java"), "package example;");
+        Template template = new Template(Paths.get("example", "Test.java"), "package example;");
         Template result = processor.process(template);
 
         assertEquals("package io.bootique.test;", result.getContent());
@@ -52,14 +56,14 @@ public class JavaPackageProcessorTest {
 
     @Test
     public void outputPathSimple() {
-        Path path = Paths.get("tpl/example/MyClass.java");
+        Path path = Paths.get("tpl/example/Test.java");
         Path out = processor.outputPath(new Template(path, ""));
         assertEquals(Paths.get("tpl", "io", "bootique", "test", "MyClass.java"), out);
     }
 
     @Test
     public void outputPathWithPackage() {
-        Path path = Paths.get("tpl/example/service/MyClass.java");
+        Path path = Paths.get("tpl/example/service/Test.java");
         Path out = processor.outputPath(new Template(path, ""));
         assertEquals(Paths.get("tpl", "io", "bootique", "test", "service", "MyClass.java"), out);
     }

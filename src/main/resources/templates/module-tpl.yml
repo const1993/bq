@@ -1,10 +1,5 @@
-properties:
-  java.package: "io.bootique.demo"
-  gradle.group: "io.bootique.demo"
-  gradle.project.name: "bootique-demo"
-  gradle.version: "0.26-SNAPSHOT"
-
 templates:
+  templateRoot: "templates/module-tpl.zip"
   sourceSets:
     # bootique module file
     - includes:

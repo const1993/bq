@@ -15,7 +15,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InteractiveCliFactory extends JoptCliFactory {
@@ -33,8 +32,6 @@ public class InteractiveCliFactory extends JoptCliFactory {
 
     @Override
     public Cli createCli(String[] args) {
-        OptionSet parse = parse(args);
-
         if (args.length == 0) {
             return NoArgsCli.getInstance();
         }
@@ -42,11 +39,11 @@ public class InteractiveCliFactory extends JoptCliFactory {
         OptionSet parsed = parse(args);
         String commandName = commandName(parsed);
         ManagedCommand managedCommand = commandManagerProvider.get().lookupByName(commandName);
-        List<String> interactives = managedCommand.getCommand().getMetadata().getOptions()
+        List<String> interactiveList = managedCommand.getCommand().getMetadata().getOptions()
                 .stream().filter(o -> o instanceof InteractiveOptionMetadata && ((InteractiveOptionMetadata) o).isInteractive())
-                .map(o -> o.getName())
+                .map(OptionMetadata::getName)
                 .collect(Collectors.toList());
-        return new InteractiveCli(parsed, commandName, interactives);
+        return new InteractiveCli(parsed, commandName, interactiveList);
     }
 
     private OptionSet parse(String[] args) {

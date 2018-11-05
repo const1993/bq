@@ -3,25 +3,30 @@ package io.bootique.tools.template.command;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import io.bootique.cli.Cli;
-import io.bootique.command.Command;
 import io.bootique.command.CommandOutcome;
 import io.bootique.meta.application.OptionMetadata;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
-import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class NewProjectCommand extends AbstractInteractiveCommand {
+import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+
+public class NewProjectCommand extends InteractiveCommandWithMetadata {
 
     @Inject
     Provider<TemplateService> templateService;
 
     @Inject
     Provider<PropertyService> propertyServiceProvider;
+
+    public NewProjectCommand(InteractiveCommandMetadata.Builder metadataBuilder) {
+        super(metadataBuilder);
+    }
+
+    public NewProjectCommand(InteractiveCommandMetadata metadata) {
+        super(metadata);
+    }
 
     public NewProjectCommand(List<OptionMetadata> options) {
         super(InteractiveCommandMetadata
@@ -40,7 +45,6 @@ public class NewProjectCommand extends AbstractInteractiveCommand {
             propertyService.setProperty(PACKAGE, cli.optionString(PACKAGE));
         }
 
-        System.setProperty(COMMAND_TYPE, NewProjectCommand.class.getName());
         templateService.get().process();
         return CommandOutcome.succeeded();
     }

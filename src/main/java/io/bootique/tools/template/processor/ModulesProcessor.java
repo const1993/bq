@@ -1,14 +1,15 @@
 package io.bootique.tools.template.processor;
 
 import io.bootique.tools.template.Template;
-import io.bootique.tools.template.command.AbstractInteractiveCommand;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+
 public class ModulesProcessor extends JavaPackageProcessor {
 
-    public static final String EXAMPLE_MODULE = "ExampleModule";
+    protected static final String EXAMPLE_MODULE = "ExampleModule";
 
     @Override
     public Template process(Template template) {
@@ -18,7 +19,8 @@ public class ModulesProcessor extends JavaPackageProcessor {
     @Override
     Path outputPath(Template template) {
         Path path = super.outputPath(template);
-        String pathString = path.toString().replace(EXAMPLE_MODULE, propertyService.getProperty(AbstractInteractiveCommand.NAME));
+        String property = propertyService.getProperty(NAME);
+        String pathString = path.toString().replace(EXAMPLE_MODULE, property);
         return Paths.get(pathString);
     }
 
@@ -27,7 +29,7 @@ public class ModulesProcessor extends JavaPackageProcessor {
         String content = template.getContent();
         content = replaceImportDeclaration(content);
         content = replacePackageDeclaration(content);
-        return content.replaceAll("class " + EXAMPLE_MODULE, propertyService.getProperty(AbstractInteractiveCommand.NAME));
+        return content.replaceAll("class " + EXAMPLE_MODULE, propertyService.getProperty(NAME));
     }
 
 }
