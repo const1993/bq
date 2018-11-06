@@ -10,6 +10,7 @@ import io.bootique.tools.template.services.TemplateService;
 
 import java.util.List;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
 
 public class NewProjectCommand extends InteractiveCommandWithMetadata {

@@ -10,8 +10,7 @@ import io.bootique.tools.template.services.TemplateService;
 
 import java.util.List;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
-import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+import static io.bootique.tools.template.services.DefaultPropertyService.*;
 
 public class NewModuleCommand extends InteractiveCommandWithMetadata {
 
@@ -48,7 +47,9 @@ public class NewModuleCommand extends InteractiveCommandWithMetadata {
             value = cli.optionString(NAME);
         }
 
-        propertyService.setProperty(NAME, !value.contains("Module") ? value + "Module": value);
+        propertyService.setProperty(NAME, value);
+        propertyService.setProperty(MODULE_NAME, !value.contains("Module") ? value + "Module": value);
+        propertyService.setProperty(MODULE_PROVIDER_NAME, !value.contains("Module") ? value + "ModuleProvider": value + "Provider");
 
         if (!propertyService.hasProperty(PACKAGE)) {
             propertyService.setProperty(PACKAGE, cli.optionString(PACKAGE));

@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
 
 public class JavaPackageProcessor implements TemplateProcessor {
@@ -30,7 +29,7 @@ public class JavaPackageProcessor implements TemplateProcessor {
         String content = template.getContent();
         content = replacePackageDeclaration(content);
         content = replaceImportDeclaration(content);
-        return content.replace("class " + EXAMPLE_CLASS, "class " + propertyService.getProperty(NAME));
+        return content;
     }
 
     String replacePackageDeclaration(String content) {
@@ -47,7 +46,6 @@ public class JavaPackageProcessor implements TemplateProcessor {
         Path packagePath = packageToPath(propertyService.getProperty(PACKAGE));
         char separator = File.separatorChar;
         pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
-        pathStr = pathStr.replace(EXAMPLE_CLASS+".java", propertyService.getProperty(NAME)+".java");
         return Paths.get(pathStr);
     }
 

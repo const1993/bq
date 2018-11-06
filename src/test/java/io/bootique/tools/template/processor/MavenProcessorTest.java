@@ -22,9 +22,9 @@ public class MavenProcessorTest {
         processor = new MavenProcessor();
 
         PropertyService propertyService = new DefaultPropertyService();
-        propertyService.setProperty("maven.artifactId", "bootique-tools");
-        propertyService.setProperty("maven.groupId", "io.bootique.tools");
-        propertyService.setProperty("maven.version", "1.0-SNAPSHOT");
+        propertyService.setProperty("project.artifactId", "bootique-tools");
+        propertyService.setProperty("project.groupId", "io.bootique.tools");
+        propertyService.setProperty("project.version", "1.0-SNAPSHOT");
         processor.propertyService = propertyService;
     }
 

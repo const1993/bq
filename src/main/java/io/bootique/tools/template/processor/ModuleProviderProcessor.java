@@ -33,6 +33,7 @@ public class ModuleProviderProcessor implements TemplateProcessor {
             return content;
         }
 
+        name = !name.endsWith("ModuleProvider") ? name + "ModuleProvider" : name;
         return content.replaceAll(MODULE_PATH_EXAMPLE, propertyService.getProperty("java.package") + "." + name);
     }
 

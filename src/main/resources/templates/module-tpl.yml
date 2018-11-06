@@ -4,6 +4,7 @@ templates:
     # bootique module file
     - includes:
         - "**/ExampleModule.java"
+        - "**/ExampleModuleProvider.java"
       processors:
         - module
     # module provider file

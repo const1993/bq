@@ -31,7 +31,7 @@ public class JavaPackageProcessorTest {
         Template result = processor.process(template);
 
         assertEquals("package io.bootique.test;", result.getContent());
-        assertEquals(Paths.get("/io", "bootique", "test", "MyClass.java"), result.getPath());
+        assertEquals(Paths.get("/io", "bootique", "test", "Test.java"), result.getPath());
     }
 
     @Test
@@ -58,14 +58,14 @@ public class JavaPackageProcessorTest {
     public void outputPathSimple() {
         Path path = Paths.get("tpl/example/Test.java");
         Path out = processor.outputPath(new Template(path, ""));
-        assertEquals(Paths.get("tpl", "io", "bootique", "test", "MyClass.java"), out);
+        assertEquals(Paths.get("tpl", "io", "bootique", "test", "Test.java"), out);
     }
 
     @Test
     public void outputPathWithPackage() {
         Path path = Paths.get("tpl/example/service/Test.java");
         Path out = processor.outputPath(new Template(path, ""));
-        assertEquals(Paths.get("tpl", "io", "bootique", "test", "service", "MyClass.java"), out);
+        assertEquals(Paths.get("tpl", "io", "bootique", "test", "service", "Test.java"), out);
     }
 
     @Test

@@ -5,11 +5,14 @@ import io.bootique.tools.template.Template;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.MODULE_NAME;
+import static io.bootique.tools.template.services.DefaultPropertyService.MODULE_PROVIDER_NAME;
 import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 
 public class ModulesProcessor extends JavaPackageProcessor {
 
     protected static final String EXAMPLE_MODULE = "ExampleModule";
+    protected static final String EXAMPLE_MODULE_PROVIDER = "ExampleModuleProvider";
 
     @Override
     public Template process(Template template) {
@@ -19,8 +22,13 @@ public class ModulesProcessor extends JavaPackageProcessor {
     @Override
     Path outputPath(Template template) {
         Path path = super.outputPath(template);
-        String property = propertyService.getProperty(NAME);
-        String pathString = path.toString().replace(EXAMPLE_MODULE, property);
+        String pathString = path.toString();
+        String name = getName(template);
+        pathString = path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java") ?
+            pathString.replace(EXAMPLE_MODULE_PROVIDER, name):
+                path.endsWith(EXAMPLE_MODULE + ".java") ?
+                        pathString.replace(EXAMPLE_MODULE, name): pathString;
+
         return Paths.get(pathString);
     }
 
@@ -29,7 +37,30 @@ public class ModulesProcessor extends JavaPackageProcessor {
         String content = template.getContent();
         content = replaceImportDeclaration(content);
         content = replacePackageDeclaration(content);
-        return content.replaceAll("class " + EXAMPLE_MODULE, propertyService.getProperty(NAME));
+        content = content.replaceAll("class " + EXAMPLE_MODULE_PROVIDER, propertyService.getProperty(MODULE_PROVIDER_NAME));
+        content = content.replaceAll("class " + EXAMPLE_MODULE, propertyService.getProperty(MODULE_NAME));
+
+        return content.replaceAll("new " + EXAMPLE_MODULE, "new " + propertyService.getProperty(MODULE_NAME));
     }
 
+    private String getName(Template template) {
+
+        Path path = super.outputPath(template);
+
+        if (path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java")) {
+
+            String property = propertyService.getProperty(MODULE_PROVIDER_NAME);
+            System.out.println(property);
+            return property;
+        }
+
+        if(path.endsWith(EXAMPLE_MODULE + ".java")) {
+            String property = propertyService.getProperty(MODULE_NAME);
+            System.out.println(property);
+            return property;
+        }
+
+        System.out.println(propertyService.getProperty(NAME));
+        return propertyService.getProperty(NAME);
+    }
 }

@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
-import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+import static io.bootique.tools.template.services.DefaultPropertyService.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -111,6 +110,8 @@ public class ApplicationTest {
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         propertyService.setProperty(NAME, TEST_CLASS_NAME);
         propertyService.setProperty(PACKAGE, TEST_PACKAGE);
+        propertyService.setProperty(MODULE_NAME,TEST_CLASS_NAME + "Module");
+        propertyService.setProperty(MODULE_PROVIDER_NAME, TEST_CLASS_NAME + "ModuleProvider");
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
