@@ -1,5 +1,4 @@
 properties:
-  java.package: "io.bootique.demo"
   project.groupId: "io.bootique.demo"
   project.artifactId: "bootique-demo"
   project.version: "1.0-SNAPSHOT"
@@ -7,17 +6,26 @@ properties:
 templates:
   templateRoot: "templates/gradle-hello-tpl.zip"
   sourceSets:
-    # java files
-    - includes:
-        - "**/*.java"
-      processors:
-        - javaPackage
     # gradle files
     - includes:
-        - "*.gradle"
+      - "*.gradle"
       processors:
-        - gradle
+      - gradle
 
+    - includes:
+      - "**/ExampleModule.java"
+      processors:
+      - module
+
+    # java files
+    - includes:
+      - "**/*.java"
+      processors:
+      - javaPackage
+      excludes:
+      - pom.xml
+      - "*.gradle"
+      - "**/ExampleModule.java"
     # everything else
     - excludes:
         - pom.xml

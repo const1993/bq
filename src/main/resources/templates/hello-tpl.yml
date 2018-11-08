@@ -1,5 +1,4 @@
 properties:
-  java.package: "io.bootique.demo"
   project.groupId: "io.bootique.demo"
   project.artifactId: "bootique-demo"
   project.version: "1.0-SNAPSHOT"
@@ -7,18 +6,27 @@ properties:
 templates:
   templateRoot: "templates/hello-tpl.zip"
   sourceSets:
-    # maven project
-    - includes:
-        - pom.xml
-      processors:
-        - maven
-    # java files
-    - includes:
-        - "**/*.java"
-      processors:
-        - javaPackage
+  # maven project
+  - includes:
+    - pom.xml
+    processors:
+    - maven
+  - includes:
+    - "**/ExampleModule.java"
+    processors:
+    - module
+    excludes:
+    - pom.xml
 
-    # everything else
-    - excludes:
-        - pom.xml
-        - "**/*.java"
+  # java files
+  - includes:
+    - "**/*.java"
+    processors:
+    - javaPackage
+    excludes:
+    - pom.xml
+    - "**/ExampleModule.java"
+  # everything else
+  - excludes:
+    - pom.xml
+    - "**/*.java"

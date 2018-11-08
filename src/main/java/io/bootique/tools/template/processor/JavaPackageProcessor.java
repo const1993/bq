@@ -8,12 +8,12 @@ import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
+
 
 public class JavaPackageProcessor implements TemplateProcessor {
 
     protected static final String TEMPLATE_PACKAGE = "example";
-    protected static final String EXAMPLE_CLASS = "Test";
 
     @Inject
     PropertyService propertyService;
@@ -33,17 +33,17 @@ public class JavaPackageProcessor implements TemplateProcessor {
     }
 
     String replacePackageDeclaration(String content) {
-        return content.replaceAll("\\bpackage " + TEMPLATE_PACKAGE, "package " + propertyService.getProperty(PACKAGE));
+        return content.replaceAll("\\bpackage " + TEMPLATE_PACKAGE, "package " + propertyService.getProperty(GROUP));
     }
 
     String replaceImportDeclaration(String content) {
-        return content.replaceAll("\\bimport " + TEMPLATE_PACKAGE, "import " + propertyService.getProperty(PACKAGE));
+        return content.replaceAll("\\bimport " + TEMPLATE_PACKAGE, "import " + propertyService.getProperty(GROUP));
     }
 
     Path outputPath(Template template) {
         Path input = template.getPath();
         String pathStr = input.toString();
-        Path packagePath = packageToPath(propertyService.getProperty(PACKAGE));
+        Path packagePath = packageToPath(propertyService.getProperty(GROUP));
         char separator = File.separatorChar;
         pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
         return Paths.get(pathStr);

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 public class ApplicationTest {
 
     public static final String TEST_PACKAGE = "io.bootique.demo";
-    public static final String TEST_CLASS_NAME = "Test";
+    public static final String TEST_CLASS_NAME = "TestModule";
     public static final String DEFAULT_FOLDER = System.getProperty("user.dir");
 
     @Rule
@@ -36,13 +36,29 @@ public class ApplicationTest {
     public void runtimeTest() throws IOException {
         cleanup();
         BQRuntime runtime = testFactory.app()
-                .args("--new-project", "-c=classpath:test-tpl/hello-tpl.yml")
+                .args("--new", "-c=classpath:test-tpl/hello-tpl.yml")
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         propertyService.setProperty(NAME, TEST_CLASS_NAME);
-        assertEquals(TEST_PACKAGE, propertyService.getProperty(PACKAGE));
+        assertEquals(TEST_PACKAGE, propertyService.getProperty(GROUP));
+
+        TemplateService templateService = runtime.getInstance(TemplateService.class);
+        templateService.process();
+    }
+
+    @Test
+    public void runtimeTplTest() throws IOException {
+        cleanup();
+        BQRuntime runtime = testFactory.app()
+                .args("--new", "--tpl=classpath:test-tpl/hello-tpl.yml")
+                .autoLoadModules()
+                .createRuntime();
+
+        PropertyService propertyService = runtime.getInstance(PropertyService.class);
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+        assertEquals(TEST_PACKAGE, propertyService.getProperty(GROUP));
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -52,14 +68,12 @@ public class ApplicationTest {
     public void gradleRuntimeTest() throws IOException {
         cleanup();
         BQRuntime runtime = testFactory.app()
-                .args("--new-project", "--gradle-hello-tpl")
+                .args("--new", "--tpl=gradle-prj")
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         propertyService.setProperty(NAME, TEST_CLASS_NAME);
-        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
-
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -69,13 +83,12 @@ public class ApplicationTest {
     public void loadFromClasspathTest() throws IOException {
         cleanup();
         BQRuntime runtime = testFactory.app()
-                .args("--new-project", "--hello-tpl")
+                .args("--new", "--tpl=maven-prj")
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         propertyService.setProperty(NAME, TEST_CLASS_NAME);
-        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -86,13 +99,13 @@ public class ApplicationTest {
         cleanup();
 
         BQRuntime runtime = testFactory.app()
-                .args("--new-project", "--gradle-hello-tpl")
+                .args("--new", "--tpl=gradle-prj")
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         propertyService.setProperty(NAME, TEST_CLASS_NAME);
-        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
+        propertyService.setProperty(GROUP, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -103,15 +116,13 @@ public class ApplicationTest {
         cleanup();
 
         BQRuntime runtime = testFactory.app()
-                .args("--new-module", "-m" )
+                .args("--new", "--tpl=module" )
                 .autoLoadModules()
                 .createRuntime();
 
         PropertyService propertyService = runtime.getInstance(PropertyService.class);
         propertyService.setProperty(NAME, TEST_CLASS_NAME);
-        propertyService.setProperty(PACKAGE, TEST_PACKAGE);
-        propertyService.setProperty(MODULE_NAME,TEST_CLASS_NAME + "Module");
-        propertyService.setProperty(MODULE_PROVIDER_NAME, TEST_CLASS_NAME + "ModuleProvider");
+        propertyService.setProperty(GROUP, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
         templateService.process();
@@ -119,11 +130,12 @@ public class ApplicationTest {
     }
 
     private void cleanup() throws IOException {
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "test.file"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "example.file"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "build.gradle"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "settings.gradle"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "pom.xml"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "Test.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "TestModule.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "io", "bootique", "demo", "TestModuleProvider.java"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "resources", "META-INF", "io.bootique.BQModuleProvider"));
 
     }

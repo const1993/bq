@@ -11,6 +11,9 @@ import io.bootique.tools.template.TemplateException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
+import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+
 public class MavenProcessor extends XMLTemplateProcessor {
 
     @Inject
@@ -29,6 +32,11 @@ public class MavenProcessor extends XMLTemplateProcessor {
 
             Node version = (Node)xpath.evaluate("/project/version", document, XPathConstants.NODE);
             version.setTextContent(propertyService.getProperty("project.version"));
+
+            Node main = (Node) xpath.evaluate("/project/properties/main.class", document, XPathConstants.NODE);
+            if (main != null) {
+                main.setTextContent(propertyService.getProperty(GROUP) + "." + propertyService.getProperty(NAME));
+            }
         } catch (XPathExpressionException ex) {
             throw new TemplateException("Unable to modify xml, is template a proper maven xml?", ex);
         }

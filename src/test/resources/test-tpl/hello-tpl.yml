@@ -1,5 +1,4 @@
 properties:
-  java.package: "io.bootique.demo"
   project.groupId: "io.bootique.demo"
   project.artifactId: "bootique-demo"
   project.version: "1.0.RC1"
@@ -13,12 +12,21 @@ templates:
         - pom.xml
       processors:
         - maven
+    - includes:
+      - "**/ExampleModule.java"
+      processors:
+      - module
+      excludes:
+      - pom.xml
+
     # java files
     - includes:
         - "**/*.java"
       processors:
         - javaPackage
-
+      excludes:
+        - pom.xml
+        - "**/ExampleModule.java"
     # everything else
     - excludes:
         - pom.xml

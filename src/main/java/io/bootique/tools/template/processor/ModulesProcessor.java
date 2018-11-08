@@ -25,7 +25,7 @@ public class ModulesProcessor extends JavaPackageProcessor {
         String pathString = path.toString();
         String name = getName(template);
         pathString = path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java") ?
-            pathString.replace(EXAMPLE_MODULE_PROVIDER, name):
+            pathString.replace(EXAMPLE_MODULE_PROVIDER, name + "Provider"):
                 path.endsWith(EXAMPLE_MODULE + ".java") ?
                         pathString.replace(EXAMPLE_MODULE, name): pathString;
 
@@ -37,30 +37,30 @@ public class ModulesProcessor extends JavaPackageProcessor {
         String content = template.getContent();
         content = replaceImportDeclaration(content);
         content = replacePackageDeclaration(content);
-        content = content.replaceAll("class " + EXAMPLE_MODULE_PROVIDER, propertyService.getProperty(MODULE_PROVIDER_NAME));
-        content = content.replaceAll("class " + EXAMPLE_MODULE, propertyService.getProperty(MODULE_NAME));
+        content = content.replaceAll("class " + EXAMPLE_MODULE_PROVIDER, "class " + propertyService.getProperty(NAME) + "Provider");
+        content = content.replaceAll(EXAMPLE_MODULE, propertyService.getProperty(NAME));
 
-        return content.replaceAll("new " + EXAMPLE_MODULE, "new " + propertyService.getProperty(MODULE_NAME));
+        return content.replaceAll("new " + EXAMPLE_MODULE, "new " + propertyService.getProperty(NAME));
     }
 
     private String getName(Template template) {
 
-        Path path = super.outputPath(template);
-
-        if (path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java")) {
-
-            String property = propertyService.getProperty(MODULE_PROVIDER_NAME);
-            System.out.println(property);
-            return property;
-        }
-
-        if(path.endsWith(EXAMPLE_MODULE + ".java")) {
-            String property = propertyService.getProperty(MODULE_NAME);
-            System.out.println(property);
-            return property;
-        }
-
-        System.out.println(propertyService.getProperty(NAME));
+//        Path path = super.outputPath(template);
+//
+//        if (path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java")) {
+//
+//            String property = propertyService.getProperty(MODULE_PROVIDER_NAME);
+//            System.out.println(property);
+//            return property;
+//        }
+//
+//        if(path.endsWith(EXAMPLE_MODULE + ".java")) {
+//            String property = propertyService.getProperty(MODULE_NAME);
+//            System.out.println(property);
+//            return property;
+//        }
+//
+//        System.out.println(propertyService.getProperty(NAME));
         return propertyService.getProperty(NAME);
     }
 }

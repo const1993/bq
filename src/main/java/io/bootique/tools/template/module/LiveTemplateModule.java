@@ -16,7 +16,8 @@ import io.bootique.command.CommandManager;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.meta.application.ApplicationMetadata;
 import io.bootique.meta.application.OptionMetadata;
-import io.bootique.tools.template.command.NewProjectCommand;
+import io.bootique.tools.template.command.NewCommand;
+import io.bootique.tools.template.provider.ExtendedJsonConfigurationFactoryPovider;
 import io.bootique.tools.template.services.DefaultPropertyService;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
@@ -27,12 +28,11 @@ import io.bootique.tools.template.processor.ModuleProviderProcessor;
 import io.bootique.tools.template.processor.ModulesProcessor;
 import io.bootique.tools.template.processor.TemplateProcessor;
 import io.bootique.tools.template.services.cli.InteractiveCliFactory;
-import io.bootique.tools.template.command.NewModuleCommand;
 import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
+import io.bootique.tools.template.services.options.TemplateOptionMetadata;
 import io.bootique.type.TypeRef;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
-import static io.bootique.tools.template.services.DefaultPropertyService.PACKAGE;
+import static io.bootique.tools.template.services.DefaultPropertyService.*;
 
 public class LiveTemplateModule extends ConfigModule {
 
@@ -40,29 +40,45 @@ public class LiveTemplateModule extends ConfigModule {
     public void configure(Binder binder) {
 
         binder.bind(PropertyService.class).to(DefaultPropertyService.class).in(Singleton.class);
+        binder.bind(ConfigurationFactory.class).toProvider(ExtendedJsonConfigurationFactoryPovider.class).in(Singleton.class);
 
-        OptionMetadata helloTemplateOption = OptionMetadata.builder("hello-tpl").description("Load template by option").build();
-        OptionMetadata gradleTemplateOption = OptionMetadata.builder("gradle-hello-tpl").description("Load template by option").build();
-        OptionMetadata moduleOption = OptionMetadata.builder("module-template").description("Load module template").build();
-
+        OptionMetadata templateOption = TemplateOptionMetadata
+                .builder("tpl")
+                .valueRequired("Template id")
+                .defaultValue("maven-prj", "classpath:templates/hello-tpl.yml")
+                .valueRequired("gradle-prj", "classpath:templates/gradle-hello-tpl.yml")
+                .valueRequired("module", "classpath:templates/module-tpl.yml")
+                .description("Project or module template or path to config file.")
+                .valueOptional()
+                .build();
+        InteractiveOptionMetadata artifactId = InteractiveOptionMetadata
+                .builder(ARTIFACT)
+                .valueRequired("artifactId")
+                .interactive()
+                .description("Artifact id.")
+                .build();
+        InteractiveOptionMetadata groupOption = InteractiveOptionMetadata
+                .builder(GROUP)
+                .valueRequired("group")
+                .interactive()
+                .description("Group. Package structure.")
+                .build();
         InteractiveOptionMetadata nameOption = InteractiveOptionMetadata
                 .builder(NAME)
                 .valueRequired("module_name")
                 .interactive()
                 .description("Module name.")
                 .build();
-        InteractiveOptionMetadata package_path = InteractiveOptionMetadata
-                .builder(PACKAGE)
-                .valueRequired("package_path")
+        InteractiveOptionMetadata versionOption = InteractiveOptionMetadata
+                .builder(VERSION)
+                .valueRequired("version")
                 .interactive()
-                .description("Dot separated module path executed.")
+                .description("Project version. e.g. 1.0-SNAPSHOT")
                 .build();
+
         BQCoreModule.extend(binder)
-                .addOption(gradleTemplateOption).addConfigOnOption(gradleTemplateOption.getName(), "classpath:templates/gradle-hello-tpl.yml")
-                .addOption(helloTemplateOption).addConfigOnOption(helloTemplateOption.getName(), "classpath:templates/hello-tpl.yml")
-                .addOption(moduleOption).addConfigOnOption(moduleOption.getName(), "classpath:templates/module-tpl.yml")
-                .addCommand(new NewProjectCommand(Stream.of(package_path).collect(Collectors.toList())))
-                .addCommand(new NewModuleCommand(Stream.of(nameOption, package_path).collect(Collectors.toList())));
+                .addOption(templateOption)
+                .addCommand(new NewCommand(Stream.of(artifactId, groupOption, nameOption, versionOption).collect(Collectors.toList())));
 
         contributeProcessor(binder, "module", ModulesProcessor.class);
         contributeProcessor(binder, "moduleProvider", ModuleProviderProcessor.class);

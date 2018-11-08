@@ -7,6 +7,7 @@ public class Application {
     public static void main(String[] args) {
         Bootique
                 .app(args)
+//                .args("--new", "--tpl=gradle-prj")
                 .autoLoadModules()
                 .exec()
                 .exit();
