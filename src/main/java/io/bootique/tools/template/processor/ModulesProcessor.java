@@ -5,8 +5,6 @@ import io.bootique.tools.template.Template;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.MODULE_NAME;
-import static io.bootique.tools.template.services.DefaultPropertyService.MODULE_PROVIDER_NAME;
 import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 
 public class ModulesProcessor extends JavaPackageProcessor {
