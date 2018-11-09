@@ -181,5 +181,4 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
         ObjectMapper jsonToObjectMapper = jacksonService.newObjectMapper();
         return new JsonNodeConfigurationFactory(rootNode, jsonToObjectMapper);
     }
-
 }

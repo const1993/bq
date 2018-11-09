@@ -1,3 +1,7 @@
+properties:
+  project.artifactId: "stub"
+  project.version: "stub"
+
 templates:
   templateRoot: "templates/module-tpl.zip"
   sourceSets:

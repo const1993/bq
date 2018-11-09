@@ -21,11 +21,11 @@ public class ModulesProcessor extends JavaPackageProcessor {
     Path outputPath(Template template) {
         Path path = super.outputPath(template);
         String pathString = path.toString();
-        String name = getName(template);
+
         pathString = path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java") ?
-            pathString.replace(EXAMPLE_MODULE_PROVIDER, name + "Provider"):
+            pathString.replace(EXAMPLE_MODULE_PROVIDER, propertyService.getProperty(NAME) + "Provider"):
                 path.endsWith(EXAMPLE_MODULE + ".java") ?
-                        pathString.replace(EXAMPLE_MODULE, name): pathString;
+                        pathString.replace(EXAMPLE_MODULE, propertyService.getProperty(NAME)): pathString;
 
         return Paths.get(pathString);
     }
@@ -41,24 +41,4 @@ public class ModulesProcessor extends JavaPackageProcessor {
         return content.replaceAll("new " + EXAMPLE_MODULE, "new " + propertyService.getProperty(NAME));
     }
 
-    private String getName(Template template) {
-
-//        Path path = super.outputPath(template);
-//
-//        if (path.endsWith(EXAMPLE_MODULE_PROVIDER + ".java")) {
-//
-//            String property = propertyService.getProperty(MODULE_PROVIDER_NAME);
-//            System.out.println(property);
-//            return property;
-//        }
-//
-//        if(path.endsWith(EXAMPLE_MODULE + ".java")) {
-//            String property = propertyService.getProperty(MODULE_NAME);
-//            System.out.println(property);
-//            return property;
-//        }
-//
-//        System.out.println(propertyService.getProperty(NAME));
-        return propertyService.getProperty(NAME);
-    }
 }
