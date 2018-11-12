@@ -95,6 +95,21 @@ public class ApplicationTest {
     }
 
     @Test
+    public void loadFromClasspathTestDefault() throws IOException {
+        cleanup();
+        BQRuntime runtime = testFactory.app()
+                .args("--new")
+                .autoLoadModules()
+                .createRuntime();
+
+        PropertyService propertyService = runtime.getInstance(PropertyService.class);
+        propertyService.setProperty(NAME, TEST_CLASS_NAME);
+
+        TemplateService templateService = runtime.getInstance(TemplateService.class);
+        templateService.process();
+    }
+
+    @Test
     public void loadGradleProjectFromClasspathTest() throws IOException {
         cleanup();
 

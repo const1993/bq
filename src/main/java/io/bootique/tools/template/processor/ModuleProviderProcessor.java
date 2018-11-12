@@ -7,6 +7,7 @@ import io.bootique.tools.template.Template;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
 import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 import static java.io.File.separator;
 
@@ -20,7 +21,7 @@ public class ModuleProviderProcessor implements TemplateProcessor {
 
     @Override
     public Template process(Template template) {
-        return template.withContent(processContent(template)).withPath(processPath(template));
+        return template.withPath(processPath(template)).withContent(processContent(template));
     }
 
     String processContent(Template template) {
@@ -33,8 +34,8 @@ public class ModuleProviderProcessor implements TemplateProcessor {
             return content;
         }
 
-        name = !name.endsWith("ModuleProvider") ? name + "ModuleProvider" : name;
-        return content.replaceAll(MODULE_PATH_EXAMPLE, propertyService.getProperty("java.package") + "." + name);
+        name = !name.endsWith("Provider") ? name + "Provider" : name;
+        return content.replaceAll(MODULE_PATH_EXAMPLE, propertyService.getProperty(GROUP) + "." + name + "\n");
     }
 
     Path processPath(Template template) {

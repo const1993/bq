@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import io.bootique.cli.Cli;
+import io.bootique.command.CommandManager;
 import io.bootique.config.ConfigurationFactory;
 import io.bootique.config.ConfigurationSource;
 import io.bootique.config.OptionRefWithConfig;
@@ -21,11 +22,12 @@ import io.bootique.jackson.JacksonService;
 import io.bootique.log.BootLogger;
 import io.bootique.meta.application.OptionMetadata;
 import io.bootique.resource.ResourceFactory;
-import io.bootique.tools.template.services.options.TemplateOptionMetadata;
+import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
 import joptsimple.OptionSpec;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
     private Set<OptionMetadata> optionMetadata;
     private Set<OptionRefWithConfig> optionDecorators;
     private Cli cli;
+    private CommandManager commandManager;
 
     @Inject
     public ExtendedJsonConfigurationFactoryPovider(
@@ -54,6 +57,7 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
             BootLogger bootLogger,
             Set<OptionMetadata> optionMetadata,
             Set<OptionRefWithConfig> optionDecorators,
+            Provider<CommandManager> commandManagerProvider,
             Cli cli) {
 
         this.configurationSource = configurationSource;
@@ -62,6 +66,7 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
         this.bootLogger = bootLogger;
         this.optionMetadata = optionMetadata;
         this.optionDecorators = optionDecorators;
+        this.commandManager = commandManagerProvider.get();
         this.cli = cli;
     }
 
@@ -132,8 +137,8 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
 
             if (configPath == null) {
 
-                if (omd instanceof TemplateOptionMetadata) {
-                    configPath = ((TemplateOptionMetadata) omd).getConfigPath(finalCliValue);
+                if (omd instanceof InteractiveOptionMetadata) {
+                    configPath = ((InteractiveOptionMetadata) omd).getConfigPath(finalCliValue);
                 }
 
                 if (configPath != null) {
@@ -151,24 +156,23 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
             }
         }
 
+
         return overrider;
     }
 
     private OptionMetadata findMetadata(OptionSpec<?> option) {
 
         List<String> optionNames = option.options();
-
-        // TODO: allow lookup of option metadata by name to avoid linear scans...
-        // Though we are dealing with small collection, so shouldn't be too horrible.
-
         for (OptionMetadata omd : optionMetadata) {
             if (optionNames.contains(omd.getName())) {
                 return omd;
             }
         }
 
+        Collection<OptionMetadata> commandOptionsMetadata = commandManager.lookupByName(cli.commandName()).getCommand().getMetadata().getOptions();
+
         // this was likely a command, not an option.
-        return null;
+        return commandOptionsMetadata.stream().filter(o -> optionNames.contains(o.getName())).findAny().orElse(null);
     }
 
     @Override

@@ -68,7 +68,16 @@ public class DefaultTemplateService implements TemplateService {
     void saveTemplate(Template template) {
         try {
             Files.createDirectories(template.getPath().getParent());
-            Files.write(template.getPath(), template.getContent().getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            Path fileName = template.getPath().getFileName();
+            boolean equals = ("io.bootique.BQModuleProvider").equals(fileName.toString());
+
+            if (equals) {
+                Files.write(template.getPath(), template.getContent().getBytes(),
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } else {
+                Files.write(template.getPath(), template.getContent().getBytes(),
+                    StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            }
         } catch (IOException ex) {
             throw new TemplateException("Can't process template " + template, ex);
         }

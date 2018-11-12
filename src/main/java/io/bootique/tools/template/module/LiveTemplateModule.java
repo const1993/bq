@@ -1,5 +1,6 @@
 package io.bootique.tools.template.module;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,7 +30,6 @@ import io.bootique.tools.template.processor.ModulesProcessor;
 import io.bootique.tools.template.processor.TemplateProcessor;
 import io.bootique.tools.template.services.cli.InteractiveCliFactory;
 import io.bootique.tools.template.services.options.InteractiveOptionMetadata;
-import io.bootique.tools.template.services.options.TemplateOptionMetadata;
 import io.bootique.type.TypeRef;
 
 import static io.bootique.tools.template.services.DefaultPropertyService.*;
@@ -42,15 +42,18 @@ public class LiveTemplateModule extends ConfigModule {
         binder.bind(PropertyService.class).to(DefaultPropertyService.class).in(Singleton.class);
         binder.bind(ConfigurationFactory.class).toProvider(ExtendedJsonConfigurationFactoryPovider.class).in(Singleton.class);
 
-        OptionMetadata templateOption = TemplateOptionMetadata
+        InteractiveOptionMetadata interactiveTpl = InteractiveOptionMetadata
                 .builder("tpl")
-                .valueRequired("Template id")
-                .defaultValue("maven-prj", "classpath:templates/hello-tpl.yml")
-                .valueRequired("gradle-prj", "classpath:templates/gradle-hello-tpl.yml")
-                .valueRequired("module", "classpath:templates/module-tpl.yml")
-                .description("Project or module template or path to config file.")
-                .valueOptional()
+                .valueOptional("template name")
+                .defaultValue("maven-prj")
+                .valueWithConfig("maven-prj", "classpath:templates/hello-tpl.yml")
+                .valueWithConfig("gradle-prj", "classpath:templates/gradle-hello-tpl.yml")
+                .valueWithConfig("module", "classpath:templates/module-tpl.yml")
+                .description("Project or module template or path to config file. " +
+                        "Allowed templates: " +
+                        "maven-prj(default), gradle-prj, module.")
                 .build();
+
         InteractiveOptionMetadata artifactId = InteractiveOptionMetadata
                 .builder(ARTIFACT)
                 .valueRequired("artifactId")
@@ -76,9 +79,9 @@ public class LiveTemplateModule extends ConfigModule {
                 .description("Project version. e.g. 1.0-SNAPSHOT")
                 .build();
 
+        List<OptionMetadata> options = Stream.of(artifactId, groupOption, nameOption, versionOption, interactiveTpl).collect(Collectors.toList());
         BQCoreModule.extend(binder)
-                .addOption(templateOption)
-                .addCommand(new NewCommand(Stream.of(artifactId, groupOption, nameOption, versionOption).collect(Collectors.toList())));
+                .addCommand(new NewCommand(options));
 
         contributeProcessor(binder, "module", ModulesProcessor.class);
         contributeProcessor(binder, "moduleProvider", ModuleProviderProcessor.class);

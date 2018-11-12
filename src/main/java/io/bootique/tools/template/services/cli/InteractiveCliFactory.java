@@ -14,6 +14,7 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,17 @@ public class InteractiveCliFactory extends JoptCliFactory {
             return NoArgsCli.getInstance();
         }
 
-        OptionSet parsed = parse(args);
+        OptionSet parsed;
+        if(Arrays.binarySearch(args, "--tpl") < 0 || Arrays.binarySearch(args, "-t") < 0){
+            String[] extendedArgs = Arrays.copyOf(args, args.length + 1);
+            extendedArgs[extendedArgs.length - 1] = "--tpl";
+
+            parsed = parse(extendedArgs);
+        }
+        else {
+            parsed = parse(args);
+        }
+
         String commandName = commandName(parsed);
         ManagedCommand managedCommand = commandManagerProvider.get().lookupByName(commandName);
         List<String> interactiveList = managedCommand.getCommand().getMetadata().getOptions()

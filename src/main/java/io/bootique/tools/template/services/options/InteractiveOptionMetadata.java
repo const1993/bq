@@ -3,6 +3,9 @@ package io.bootique.tools.template.services.options;
 import io.bootique.meta.application.OptionMetadata;
 import io.bootique.meta.application.OptionValueCardinality;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class InteractiveOptionMetadata extends OptionMetadata {
 
     private boolean interactive;
@@ -13,9 +16,9 @@ public class InteractiveOptionMetadata extends OptionMetadata {
     private OptionValueCardinality valueCardinality;
     private String valueName;
 
-    // TODO: 'configResource' was deprecated and remove... should configPath be deprecated too?
     private String configPath;
     private String defaultValue;
+    private Map<String, String> templatePaths;
 
     public static Builder builder(String name) {
         return new Builder().name(name);
@@ -62,6 +65,17 @@ public class InteractiveOptionMetadata extends OptionMetadata {
     }
 
     /**
+     * Returns an optional configuration path associated with this option.
+     *
+     * @return null or a dot-separated "path" that navigates configuration tree to the property associated with this
+     * option. E.g. "jdbc.myds.password".
+     * @since 0.24
+     */
+    public String getConfigPath(String value) {
+        return templatePaths.getOrDefault(value, value);
+    }
+
+    /**
      * Returns the default value for this option. I.e. the value that will be used if the option is provided on
      * command line without an explicit value.
      *
@@ -80,10 +94,12 @@ public class InteractiveOptionMetadata extends OptionMetadata {
     public static class Builder extends OptionMetadata.Builder{
 
         private InteractiveOptionMetadata interactiveOption;
+        private Map<String, String> templatePaths;
 
         protected Builder() {
             super();
             this.interactiveOption = new InteractiveOptionMetadata();
+            this.templatePaths = new HashMap<>();
         }
 
         public InteractiveOptionMetadata.Builder interactive() {
@@ -154,6 +170,11 @@ public class InteractiveOptionMetadata extends OptionMetadata {
             return this;
         }
 
+        public Builder valueWithConfig(String value, String configPath) {
+            templatePaths.put(value, configPath);
+            return this;
+        }
+
         public InteractiveOptionMetadata build() {
             OptionMetadata optionMetadata = super.build();
 
@@ -166,6 +187,7 @@ public class InteractiveOptionMetadata extends OptionMetadata {
             metadata.defaultValue = optionMetadata.getDefaultValue();
             metadata.valueCardinality = optionMetadata.getValueCardinality();
             metadata.valueName = optionMetadata.getValueName();
+            metadata.templatePaths = templatePaths;
 
             return metadata;
         }

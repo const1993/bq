@@ -39,19 +39,22 @@ public class NewCommand extends InteractiveCommandWithMetadata {
     @Override
     public CommandOutcome run(Cli cli) {
 
-        checkOption(ARTIFACT, cli);
-        checkOption(GROUP, cli);
-        checkOption(NAME, cli);
-        checkOption(VERSION, cli);
+        checkOption(ARTIFACT, null, cli);
+        checkOption(GROUP,null,  cli);
+        checkOption(NAME, propertyServiceProvider.get().getProperty(ARTIFACT), cli);
+        checkOption(VERSION, "1.0-SNAPSHOT", cli);
 
         templateService.get().process();
         return CommandOutcome.succeeded();
     }
 
-    private void checkOption(String name, Cli cli) {
+
+    private void checkOption(String name, String alternativeOption, Cli cli) {
         PropertyService propertyService = propertyServiceProvider.get();
         if (!propertyService.hasProperty(name)) {
-            propertyService.setProperty(name, cli.optionString(name));
+            String value = cli.optionString(name);
+            propertyService.setProperty(name, value != null && !value.isEmpty()  ?
+                    value : alternativeOption);
         }
     }
 
