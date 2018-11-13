@@ -48,7 +48,7 @@ public class ApplicationTest {
         assertEquals(TEST_PACKAGE, propertyService.getProperty(GROUP));
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
+        templateService.process(Paths.get(PARENT_FOLDER));
     }
 
     @Test
@@ -66,7 +66,8 @@ public class ApplicationTest {
         assertEquals(TEST_PACKAGE, propertyService.getProperty(GROUP));
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
+        templateService.process(Paths.get(PARENT_FOLDER));
+
     }
 
     @Test
@@ -82,7 +83,7 @@ public class ApplicationTest {
         propertyService.setProperty(NAME, "App");
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
+        templateService.process(Paths.get(PARENT_FOLDER));
     }
 
     @Test
@@ -99,8 +100,7 @@ public class ApplicationTest {
         propertyService.setProperty(GROUP, TEST_PACKAGE);
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
-
+        templateService.process(Paths.get(PARENT_FOLDER));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class ApplicationTest {
         propertyService.setProperty(NAME, "App");
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
+        templateService.process(Paths.get(PARENT_FOLDER));
     }
 
     @Test
@@ -134,22 +134,22 @@ public class ApplicationTest {
         propertyService.setProperty(NAME, "App");
 
         TemplateService templateService = runtime.getInstance(TemplateService.class);
-        templateService.process();
+        templateService.process(Paths.get(PARENT_FOLDER));
     }
 
 
     private void cleanup() throws IOException {
         //Project cleanup
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "subfolder", "example.file"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "subfolder", "example.file"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "build.gradle"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "settings.gradle"));
         Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "pom.xml"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "main", "java", "io", "bootique", "demo", "App.java"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "test", "java", "io", "bootique", "demo", "MyTest.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "src", "main", "java", "io", "bootique", "demo", "App.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "parent-folder", "src", "test", "java", "io", "bootique", "demo", "MyTest.java"));
         //Module cleanup
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "main", "java", "io", "bootique", "demo", "TestModule.java"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "main", "java", "io", "bootique", "demo", "TestModuleProvider.java"));
-        Files.deleteIfExists(Paths.get("target", "tmp-output", "main", "resources", "META-INF", "io.bootique.BQModuleProvider"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "src", "main", "java", "io", "bootique", "demo", "TestModule.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "src", "main", "java", "io", "bootique", "demo", "TestModuleProvider.java"));
+        Files.deleteIfExists(Paths.get("target", "tmp-output", "src", "main", "resources", "META-INF", "io.bootique.BQModuleProvider"));
 
     }
 }

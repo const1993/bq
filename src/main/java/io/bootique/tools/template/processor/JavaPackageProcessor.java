@@ -47,9 +47,7 @@ public class JavaPackageProcessor implements TemplateProcessor {
         Path packagePath = packageToPath(propertyService.getProperty(GROUP));
         char separator = File.separatorChar;
         pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
-        String artifact = propertyService.getProperty(ARTIFACT);
-        String parentFolder = !artifact.isEmpty() ? separator + artifact  : "";
-        return Paths.get(pathStr.replaceFirst(separator + "_" , parentFolder));
+        return Paths.get(pathStr);
     }
 
     Path packageToPath(String packageName) {

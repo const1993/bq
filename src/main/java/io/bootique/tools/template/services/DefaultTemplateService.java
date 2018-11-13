@@ -18,6 +18,7 @@ public class DefaultTemplateService implements TemplateService {
     protected final Path templateRoot;
     protected final Path outputRoot;
     protected final List<SourceSet> sourceSets;
+    protected Path outputWithParent;
 
     public DefaultTemplateService(Path templateRoot, Path outputRoot, List<SourceSet> sourceSets) {
         this.templateRoot = templateRoot;
@@ -27,10 +28,11 @@ public class DefaultTemplateService implements TemplateService {
                 : sourceSets;
     }
 
-    public void process() throws TemplateException {
+    public void process(Path parentFolder) throws TemplateException {
 
+        Path outputWithParent = outputRoot.resolve(parentFolder);
 
-        if (templateRoot.toString().startsWith("~") || outputRoot.toString().startsWith("~")) {
+        if (templateRoot.toString().startsWith("~") || outputWithParent.toString().startsWith("~")) {
             throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
         }
 
@@ -62,14 +64,12 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     Template loadTemplate(Path path, String content) {
-        Path pathWithParent = outputRoot.resolve("_");
-        return new Template(pathWithParent.resolve(path), content);
+        return new Template(outputWithParent.resolve(path), content);
     }
 
     void saveTemplate(Template template) {
         try {
-            Path tmpath = template.getPath();
-            Path path = Paths.get(tmpath.toString().replace("/_", ""));
+            Path path = template.getPath();
             Files.createDirectories(path.getParent());
             Path fileName = path.getFileName();
             boolean equals = ("io.bootique.BQModuleProvider").equals(fileName.toString());

@@ -135,7 +135,7 @@ public class ExtendedJsonConfigurationFactoryPovider implements Provider<Configu
             String finalCliValue = cliValue;
             String configPath = omd.getConfigPath();
 
-            if (configPath == null) {
+            if (configPath == null && (omd.getName().equals("tpl") || omd.getName().equals("t"))) {
 
                 if (omd instanceof InteractiveOptionMetadata) {
                     configPath = ((InteractiveOptionMetadata) omd).getConfigPath(finalCliValue);

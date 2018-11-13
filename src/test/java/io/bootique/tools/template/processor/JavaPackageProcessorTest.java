@@ -23,8 +23,6 @@ public class JavaPackageProcessorTest {
         processor.propertyService = new DefaultPropertyService();
         processor.propertyService.setProperty(GROUP, "io.bootique.test");
         processor.propertyService.setProperty(NAME, "MyClass");
-        processor.propertyService.setProperty(ARTIFACT, "");
-
     }
 
     @Test

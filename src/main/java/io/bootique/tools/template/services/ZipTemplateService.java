@@ -26,7 +26,9 @@ public class ZipTemplateService extends DefaultTemplateService {
     }
 
     @Override
-    public void process() throws TemplateException {
+    public void process(Path parentFolder) throws TemplateException {
+
+        outputWithParent = outputRoot.resolve(parentFolder);
 
         URI fileURI = templateRoot.toUri();
 
@@ -43,7 +45,7 @@ public class ZipTemplateService extends DefaultTemplateService {
         if (fileURI.getScheme().equals("jar") ) {
             try {
                 String[] array = fileURI.toString().split("!");
-                System.out.println("Project will be created in folder: " + outputRoot );
+                System.out.println("Project will be created in folder: " + outputWithParent );
 
                 ZipFile zipFile = new ZipFile(array[0].replace("jar:file:", ""));
                 readInnerZipFile(zipFile, array[1].substring(1, array[1].length()));

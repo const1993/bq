@@ -34,10 +34,7 @@ public class GradleProcessor implements TemplateProcessor {
     Path outputPath(Template template) {
         Path input = template.getPath();
         String pathStr = input.toString();
-        char separator = File.separatorChar;
-        String artifact = propertyService.getProperty(ARTIFACT);
-        String parentFolder = !artifact.isEmpty() ? separator + artifact : "";
-        return Paths.get(pathStr.replaceFirst(separator + "_", parentFolder));
+        return Paths.get(pathStr);
     }
 
 }

@@ -7,7 +7,6 @@ import io.bootique.tools.template.Template;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
 import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
 import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 import static java.io.File.separator;
@@ -31,7 +30,6 @@ public class ModuleProviderProcessor implements TemplateProcessor {
 
         String name = propertyService.getProperty(NAME);
 
-        System.out.println(name + this.getClass());
         if (name == null) {
             return content;
         }
@@ -44,9 +42,7 @@ public class ModuleProviderProcessor implements TemplateProcessor {
     Path processPath(Template template) {
         Path path = template.getPath();
         String input = path.toString();
-        String artifact = propertyService.getProperty(ARTIFACT);
-        String parentFolder = artifact.isEmpty() ? "" : separator + artifact ;
-        String pathString = input.replaceAll(MODULE_PROVIDER, separator + "resources" + separator + "META-INF" + separator + MODULE_PROVIDER);
-        return  Paths.get(pathString.replaceFirst(separator + "_", parentFolder));
+
+        return  Paths.get( input.replaceAll(MODULE_PROVIDER, separator + "resources" + separator + "META-INF" + separator + MODULE_PROVIDER));
     }
 }

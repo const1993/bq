@@ -8,6 +8,7 @@ import io.bootique.meta.application.OptionMetadata;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.services.TemplateService;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import static io.bootique.tools.template.services.DefaultPropertyService.*;
@@ -43,28 +44,27 @@ public class NewCommand extends InteractiveCommandWithMetadata {
         String artifact = propertyService.getProperty(ARTIFACT);
         isModule = artifact != null && artifact.isEmpty();
 
-
         checkOption(GROUP,"",  cli);
         checkOption(ARTIFACT, "", cli);
 
+        String parent = "";
         if (isModule) {
             checkOption(NAME, "StubModule", cli);
+            String name = propertyService.getProperty(NAME);
+            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+            propertyService.setProperty(NAME, name);
         } else {
             checkOption(NAME, "App" , cli);
             String name = propertyService.getProperty(NAME);
             if (!name.equals("App")) {
-                propertyService.setProperty(ARTIFACT, name);
+                parent = name;
                 propertyService.setProperty(NAME, "App");
             }
         }
 
-        String name = propertyService.getProperty(NAME);
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
-        propertyService.setProperty(NAME, name);
-
         checkOption(VERSION, "1.0-SNAPSHOT", cli);
 
-        templateService.get().process();
+        templateService.get().process(Paths.get(parent));
         return CommandOutcome.succeeded();
     }
 
