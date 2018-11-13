@@ -3,8 +3,6 @@ package io.bootique.tools.template.processor;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,9 +22,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
-import static java.io.File.separator;
-
 public abstract class XMLTemplateProcessor implements TemplateProcessor {
 
     @Inject
@@ -34,8 +29,7 @@ public abstract class XMLTemplateProcessor implements TemplateProcessor {
 
     @Override
     public Template process(Template template) {
-        return template.withContent(processContent(template))
-                .withPath(outputPath(template));
+        return template.withContent(processContent(template));
     }
 
     String processContent(Template template) {
@@ -84,14 +78,6 @@ public abstract class XMLTemplateProcessor implements TemplateProcessor {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new TemplateException("Unable to parse XML", e);
         }
-    }
-
-    Path outputPath(Template template) {
-        Path input = template.getPath();
-        String pathStr = input.toString();
-        String artifact = propertyService.getProperty(ARTIFACT);
-        String parentFolder = !artifact.isEmpty() ? separator + artifact : "";
-        return Paths.get(pathStr.replaceFirst(separator + "_", parentFolder));
     }
 
 }

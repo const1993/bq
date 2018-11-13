@@ -1,7 +1,7 @@
 properties:
-  project.groupId: "io.bootique.demo"
-  project.artifactId: "bootique-demo"
-  project.version: "1.0.RC1"
+  group: "io.bootique.demo"
+  artifact: "bootique-demo"
+  version: "1.0.RC1"
 
 templates:
   templateRoot: "target/test-classes/test-tpl/gradle-prj"

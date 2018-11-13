@@ -6,6 +6,12 @@
     <artifactId></artifactId>
     <version></version>
 
+    <parent>
+        <groupId>io.bootique.parent</groupId>
+        <artifactId>bootique-parent</artifactId>
+        <version>0.12</version>
+    </parent>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -17,6 +23,11 @@
         <dependency>
             <groupId>io.bootique</groupId>
             <artifactId>bootique</artifactId>
+            <version>0.25</version>
+        </dependency>
+        <dependency>
+            <groupId>io.bootique</groupId>
+            <artifactId>bootique-test</artifactId>
             <version>0.25</version>
         </dependency>
 

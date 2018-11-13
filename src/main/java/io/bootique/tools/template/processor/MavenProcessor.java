@@ -9,8 +9,7 @@ import io.bootique.tools.template.TemplateException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
-import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
+import static io.bootique.tools.template.services.DefaultPropertyService.*;
 
 public class MavenProcessor extends XMLTemplateProcessor {
 
@@ -21,13 +20,13 @@ public class MavenProcessor extends XMLTemplateProcessor {
 
         try {
             Node artefactId = (Node)xpath.evaluate("/project/artifactId", document, XPathConstants.NODE);
-            artefactId.setTextContent(propertyService.getProperty("project.artifactId"));
+            artefactId.setTextContent(propertyService.getProperty(ARTIFACT));
 
             Node groupId = (Node)xpath.evaluate("/project/groupId", document, XPathConstants.NODE);
-            groupId.setTextContent(propertyService.getProperty("project.groupId"));
+            groupId.setTextContent(propertyService.getProperty(GROUP));
 
             Node version = (Node)xpath.evaluate("/project/version", document, XPathConstants.NODE);
-            version.setTextContent(propertyService.getProperty("project.version"));
+            version.setTextContent(propertyService.getProperty(VERSION));
 
             Node main = (Node) xpath.evaluate("/project/properties/main.class", document, XPathConstants.NODE);
             if (main != null) {

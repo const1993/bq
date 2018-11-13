@@ -56,9 +56,9 @@ public class LiveTemplateModule extends ConfigModule {
 
         InteractiveOptionMetadata artifactId = InteractiveOptionMetadata
                 .builder(ARTIFACT)
-                .valueRequired("artifactId")
+                .valueRequired("artifact")
                 .interactive()
-                .description("Artifact id.")
+                .description("Artifact id. Will be used as projects parent folder.")
                 .build();
         InteractiveOptionMetadata groupOption = InteractiveOptionMetadata
                 .builder(GROUP)
@@ -68,9 +68,10 @@ public class LiveTemplateModule extends ConfigModule {
                 .build();
         InteractiveOptionMetadata nameOption = InteractiveOptionMetadata
                 .builder(NAME)
-                .valueRequired("module_name")
+                .valueRequired("name")
                 .interactive()
-                .description("Module name.")
+                .description("For module: module name. For project name of parent folder if its not mentioned, " +
+                        "will be used artifact as parent folder.")
                 .build();
         InteractiveOptionMetadata versionOption = InteractiveOptionMetadata
                 .builder(VERSION)

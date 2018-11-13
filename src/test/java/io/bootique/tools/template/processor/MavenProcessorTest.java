@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
+import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
+import static io.bootique.tools.template.services.DefaultPropertyService.VERSION;
 import static org.junit.Assert.*;
 
 /**
@@ -23,9 +25,9 @@ public class MavenProcessorTest {
         processor = new MavenProcessor();
 
         PropertyService propertyService = new DefaultPropertyService();
-        propertyService.setProperty("project.artifactId", "bootique-tools");
-        propertyService.setProperty("project.groupId", "io.bootique.tools");
-        propertyService.setProperty("project.version", "1.0-SNAPSHOT");
+        propertyService.setProperty(ARTIFACT, "bootique-tools");
+        propertyService.setProperty(GROUP, "io.bootique.tools");
+        propertyService.setProperty(VERSION, "1.0-SNAPSHOT");
         processor.propertyService = propertyService;
     }
 

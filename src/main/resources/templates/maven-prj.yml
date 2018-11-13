@@ -1,7 +1,7 @@
 properties:
-  project.groupId: "io.bootique.demo"
-  project.artifactId: "bootique-demo"
-  project.version: "1.0-SNAPSHOT"
+  group: "io.bootique.demo"
+  artifact: "bootique-demo"
+  version: "1.0-SNAPSHOT"
 
 templates:
   templateRoot: "templates/maven-prj.zip"

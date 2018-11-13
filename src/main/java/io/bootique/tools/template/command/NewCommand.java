@@ -68,7 +68,6 @@ public class NewCommand extends InteractiveCommandWithMetadata {
         return CommandOutcome.succeeded();
     }
 
-
     private void checkOption(String name, String alternativeOption, Cli cli) {
         PropertyService propertyService = propertyServiceProvider.get();
         if (!propertyService.hasProperty(name)) {
@@ -78,5 +77,4 @@ public class NewCommand extends InteractiveCommandWithMetadata {
             propertyService.setProperty(name, option);
         }
     }
-
 }

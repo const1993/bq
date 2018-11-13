@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultPropertyService implements PropertyService {
 
     public static String NAME = "name";
-    public static String GROUP = "project.groupId";
-    public static String ARTIFACT = "project.artifactId";
-    public static String VERSION = "project.version";
+    public static String GROUP = "group";
+    public static String ARTIFACT = "artifact";
+    public static String VERSION = "version";
 
     private final Map<String, String> propertyMap = new ConcurrentHashMap<>();
 

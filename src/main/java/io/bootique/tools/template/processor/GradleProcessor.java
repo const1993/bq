@@ -3,12 +3,14 @@ package io.bootique.tools.template.processor;
 import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
+import io.bootique.tools.template.services.DefaultPropertyService;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
+import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
+import static io.bootique.tools.template.services.DefaultPropertyService.VERSION;
 
 public class GradleProcessor implements TemplateProcessor {
 
@@ -26,9 +28,9 @@ public class GradleProcessor implements TemplateProcessor {
 
     String processContent(String content) {
 
-        return content.replaceAll("rootProject.name = " + EXAMPLE_PROJECT, "rootProject.name = '" + propertyService.getProperty("project.artifactId") + "'")
-                .replaceAll("group = " + EXAMPLE_GROUP, "group = '" + propertyService.getProperty("project.groupId") + "'")
-                .replaceAll("version = " + GRADLE_PROJECT_VERSION, "version = '" + propertyService.getProperty("project.version") + "'");
+        return content.replaceAll("rootProject.name = " + EXAMPLE_PROJECT, "rootProject.name = '" + propertyService.getProperty(ARTIFACT) + "'")
+                .replaceAll("group = " + EXAMPLE_GROUP, "group = '" + propertyService.getProperty(GROUP) + "'")
+                .replaceAll("version = " + GRADLE_PROJECT_VERSION, "version = '" + propertyService.getProperty(VERSION) + "'");
     }
 
     Path outputPath(Template template) {

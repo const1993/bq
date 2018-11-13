@@ -1,6 +1,6 @@
 properties:
-  project.artifactId: ""
-  project.version: "stub"
+  artifact: ""
+  version: "stub"
 
 templates:
   templateRoot: "templates/module.zip"

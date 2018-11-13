@@ -1,6 +1,5 @@
 package io.bootique.tools.template.processor;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -8,9 +7,8 @@ import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
 
-import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
 import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
-
+import static java.io.File.separatorChar;
 
 public class JavaPackageProcessor implements TemplateProcessor {
 
@@ -45,13 +43,11 @@ public class JavaPackageProcessor implements TemplateProcessor {
         Path input = template.getPath();
         String pathStr = input.toString();
         Path packagePath = packageToPath(propertyService.getProperty(GROUP));
-        char separator = File.separatorChar;
-        pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
+        pathStr = pathStr.replaceAll( separatorChar + "?" + TEMPLATE_PACKAGE + separatorChar, separatorChar + packagePath.toString() + separatorChar);
         return Paths.get(pathStr);
     }
 
     Path packageToPath(String packageName) {
-        char separator = File.separatorChar;
-        return Paths.get(packageName.replace('.', separator));
+        return Paths.get(packageName.replace('.', separatorChar));
     }
 }
