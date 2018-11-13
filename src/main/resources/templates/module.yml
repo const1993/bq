@@ -1,9 +1,9 @@
 properties:
-  project.artifactId: "stub"
+  project.artifactId: ""
   project.version: "stub"
 
 templates:
-  templateRoot: "templates/module-tpl.zip"
+  templateRoot: "templates/module.zip"
   sourceSets:
     # bootique module file
     - includes:
@@ -13,7 +13,7 @@ templates:
         - module
     # module provider file
     - includes:
-        - "io.bootique.BQModuleProvider"
+        - "**/io.bootique.BQModuleProvider"
       processors:
         - moduleProvider
 
@@ -22,4 +22,4 @@ templates:
         - pom.xml
         - "**/*.java"
         - "*.gradle"
-        - "io.bootique.BQModuleProvider"
+        - "**/io.bootique.BQModuleProvider"

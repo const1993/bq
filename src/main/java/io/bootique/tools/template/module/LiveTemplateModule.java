@@ -46,9 +46,9 @@ public class LiveTemplateModule extends ConfigModule {
                 .builder("tpl")
                 .valueOptional("template name")
                 .defaultValue("maven-prj")
-                .valueWithConfig("maven-prj", "classpath:templates/hello-tpl.yml")
-                .valueWithConfig("gradle-prj", "classpath:templates/gradle-hello-tpl.yml")
-                .valueWithConfig("module", "classpath:templates/module-tpl.yml")
+                .valueWithConfig("maven-prj", "classpath:templates/maven-prj.yml")
+                .valueWithConfig("gradle-prj", "classpath:templates/gradle-prj.yml")
+                .valueWithConfig("module", "classpath:templates/module.yml")
                 .description("Project or module template or path to config file. " +
                         "Allowed templates: " +
                         "maven-prj(default), gradle-prj, module.")

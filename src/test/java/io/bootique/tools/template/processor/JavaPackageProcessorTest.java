@@ -8,6 +8,7 @@ import io.bootique.tools.template.Template;
 import org.junit.Before;
 import org.junit.Test;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
 import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
 import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 import static org.junit.Assert.*;
@@ -22,6 +23,7 @@ public class JavaPackageProcessorTest {
         processor.propertyService = new DefaultPropertyService();
         processor.propertyService.setProperty(GROUP, "io.bootique.test");
         processor.propertyService.setProperty(NAME, "MyClass");
+        processor.propertyService.setProperty(ARTIFACT, "");
 
     }
 

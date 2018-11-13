@@ -4,7 +4,7 @@ properties:
   project.version: "1.0-SNAPSHOT"
 
 templates:
-  templateRoot: "templates/hello-tpl.zip"
+  templateRoot: "templates/maven-prj.zip"
   sourceSets:
   # maven project
   - includes:

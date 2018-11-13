@@ -22,7 +22,6 @@ public class TemplateServiceFactory {
     private List<SourceSetFactory> sourceSets;
 
     TemplateService createTemplateService(Map<String, TemplateProcessor> processorMap) {
-        System.out.println("output: " + output);
 
         if (templateRoot != null && (templateRoot.toString().endsWith(".zip") || !Files.exists(templateRoot.toPath())) ) {
             return new ZipTemplateService(templateRoot.toPath(),

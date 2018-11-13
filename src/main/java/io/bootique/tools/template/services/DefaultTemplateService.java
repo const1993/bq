@@ -5,12 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import io.bootique.tools.template.Template;
 import io.bootique.tools.template.TemplateException;
 import io.bootique.tools.template.source.SourceSet;
+
+import static java.nio.file.StandardOpenOption.*;
 
 public class DefaultTemplateService implements TemplateService {
 
@@ -28,7 +29,6 @@ public class DefaultTemplateService implements TemplateService {
 
     public void process() throws TemplateException {
 
-        System.out.println("Start default processing.... " + templateRoot);
 
         if (templateRoot.toString().startsWith("~") || outputRoot.toString().startsWith("~")) {
             throw new TemplateException("Can't read template root directory with '~' home " + templateRoot);
@@ -62,21 +62,22 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     Template loadTemplate(Path path, String content) {
-        return new Template(outputRoot.resolve(path), content);
+        Path pathWithParent = outputRoot.resolve("_");
+        return new Template(pathWithParent.resolve(path), content);
     }
 
     void saveTemplate(Template template) {
         try {
-            Files.createDirectories(template.getPath().getParent());
-            Path fileName = template.getPath().getFileName();
+            Path tmpath = template.getPath();
+            Path path = Paths.get(tmpath.toString().replace("/_", ""));
+            Files.createDirectories(path.getParent());
+            Path fileName = path.getFileName();
             boolean equals = ("io.bootique.BQModuleProvider").equals(fileName.toString());
 
             if (equals) {
-                Files.write(template.getPath(), template.getContent().getBytes(),
-                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.write(path, template.getContent().getBytes(), CREATE, APPEND);
             } else {
-                Files.write(template.getPath(), template.getContent().getBytes(),
-                    StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+                Files.write(path, template.getContent().getBytes(), CREATE_NEW, WRITE);
             }
         } catch (IOException ex) {
             throw new TemplateException("Can't process template " + template, ex);

@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import io.bootique.tools.template.PropertyService;
 import io.bootique.tools.template.Template;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
 import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
 
 
@@ -46,7 +47,9 @@ public class JavaPackageProcessor implements TemplateProcessor {
         Path packagePath = packageToPath(propertyService.getProperty(GROUP));
         char separator = File.separatorChar;
         pathStr = pathStr.replaceAll( separator + "?" + TEMPLATE_PACKAGE + separator, separator + packagePath.toString() + separator);
-        return Paths.get(pathStr);
+        String artifact = propertyService.getProperty(ARTIFACT);
+        String parentFolder = !artifact.isEmpty() ? separator + artifact  : "";
+        return Paths.get(pathStr.replaceFirst(separator + "_" , parentFolder));
     }
 
     Path packageToPath(String packageName) {

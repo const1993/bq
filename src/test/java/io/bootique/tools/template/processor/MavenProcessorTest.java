@@ -8,6 +8,7 @@ import io.bootique.tools.template.Template;
 import org.junit.Before;
 import org.junit.Test;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
 import static org.junit.Assert.*;
 
 /**

@@ -18,6 +18,7 @@ public class NewCommand extends InteractiveCommandWithMetadata {
 
     @Inject
     Provider<PropertyService> propertyServiceProvider;
+    private boolean isModule;
 
     public NewCommand(InteractiveCommandMetadata.Builder metadataBuilder) {
         super(metadataBuilder);
@@ -38,10 +39,29 @@ public class NewCommand extends InteractiveCommandWithMetadata {
 
     @Override
     public CommandOutcome run(Cli cli) {
+        PropertyService propertyService = propertyServiceProvider.get();
+        String artifact = propertyService.getProperty(ARTIFACT);
+        isModule = artifact != null && artifact.isEmpty();
 
-        checkOption(ARTIFACT, null, cli);
-        checkOption(GROUP,null,  cli);
-        checkOption(NAME, propertyServiceProvider.get().getProperty(ARTIFACT), cli);
+
+        checkOption(GROUP,"",  cli);
+        checkOption(ARTIFACT, "", cli);
+
+        if (isModule) {
+            checkOption(NAME, "StubModule", cli);
+        } else {
+            checkOption(NAME, "App" , cli);
+            String name = propertyService.getProperty(NAME);
+            if (!name.equals("App")) {
+                propertyService.setProperty(ARTIFACT, name);
+                propertyService.setProperty(NAME, "App");
+            }
+        }
+
+        String name = propertyService.getProperty(NAME);
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        propertyService.setProperty(NAME, name);
+
         checkOption(VERSION, "1.0-SNAPSHOT", cli);
 
         templateService.get().process();
@@ -53,8 +73,9 @@ public class NewCommand extends InteractiveCommandWithMetadata {
         PropertyService propertyService = propertyServiceProvider.get();
         if (!propertyService.hasProperty(name)) {
             String value = cli.optionString(name);
-            propertyService.setProperty(name, value != null && !value.isEmpty()  ?
-                    value : alternativeOption);
+            String option = value != null && !value.isEmpty() ?
+                    value : alternativeOption;
+            propertyService.setProperty(name, option);
         }
     }
 

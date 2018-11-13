@@ -7,6 +7,7 @@ import io.bootique.tools.template.Template;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.bootique.tools.template.services.DefaultPropertyService.ARTIFACT;
 import static io.bootique.tools.template.services.DefaultPropertyService.GROUP;
 import static io.bootique.tools.template.services.DefaultPropertyService.NAME;
 import static java.io.File.separator;
@@ -30,18 +31,22 @@ public class ModuleProviderProcessor implements TemplateProcessor {
 
         String name = propertyService.getProperty(NAME);
 
+        System.out.println(name + this.getClass());
         if (name == null) {
             return content;
         }
 
         name = !name.endsWith("Provider") ? name + "Provider" : name;
-        return content.replaceAll(MODULE_PATH_EXAMPLE, propertyService.getProperty(GROUP) + "." + name + "\n");
+        String group = propertyService.getProperty(GROUP);
+        return content.replaceAll(MODULE_PATH_EXAMPLE, group.isEmpty() ? name +"\n" : group + "." + name + "\n");
     }
 
     Path processPath(Template template) {
         Path path = template.getPath();
         String input = path.toString();
-
-        return  Paths.get( input.replaceAll(MODULE_PROVIDER, separator + "resources" + separator + "META-INF" + separator + MODULE_PROVIDER));
+        String artifact = propertyService.getProperty(ARTIFACT);
+        String parentFolder = artifact.isEmpty() ? "" : separator + artifact ;
+        String pathString = input.replaceAll(MODULE_PROVIDER, separator + "resources" + separator + "META-INF" + separator + MODULE_PROVIDER);
+        return  Paths.get(pathString.replaceFirst(separator + "_", parentFolder));
     }
 }

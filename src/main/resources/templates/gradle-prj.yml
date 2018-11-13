@@ -1,33 +1,33 @@
 properties:
   project.groupId: "io.bootique.demo"
   project.artifactId: "bootique-demo"
-  project.version: "1.0.RC1"
+  project.version: "1.0-SNAPSHOT"
 
 templates:
-  templateRoot: "target/test-classes/test-tpl/hello-tpl"
-  output: "target/tmp-output"
+  templateRoot: "templates/gradle-prj.zip"
   sourceSets:
-    # maven project
+    # gradle files
     - includes:
-        - pom.xml
+      - "*.gradle"
       processors:
-        - maven
+      - gradle
+
     - includes:
       - "**/ExampleModule.java"
       processors:
       - module
-      excludes:
-      - pom.xml
 
     # java files
     - includes:
-        - "**/*.java"
+      - "**/*.java"
       processors:
-        - javaPackage
+      - javaPackage
       excludes:
-        - pom.xml
-        - "**/ExampleModule.java"
+      - pom.xml
+      - "*.gradle"
+      - "**/ExampleModule.java"
     # everything else
     - excludes:
         - pom.xml
         - "**/*.java"
+        - "*.gradle"
